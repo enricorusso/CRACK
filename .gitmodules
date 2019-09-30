@@ -1,0 +1,3 @@
+[submodule "incubator-ariatosca"]
+	path = incubator-ariatosca
+	url = https://github.com/enricorusso/incubator-ariatosca.git
