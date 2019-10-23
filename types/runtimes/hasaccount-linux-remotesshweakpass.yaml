@@ -1,0 +1,36 @@
+execute: remote
+script: |
+  #!/bin/bash
+
+  function getParam() {
+   if [ "$1" != "null" ]; then
+       echo $1 | cut -d\" -f 2
+   else
+       echo ""
+   fi
+  }
+
+  log="$0.log"
+
+  principal=$(getParam $1)
+  host=$(getParam $2)
+  username=$(getParam $3)
+
+  if [ $(stat -c %y /var/lib/apt/periodic/update-success-stamp | cut -d' ' -f 1) != $(date +%Y-%m-%d) ]; then
+        apt-get -qq update
+  fi
+  
+  which hydra 2>&1>/dev/null || out=$(apt-get install -qq -y --force-yes hydra 2>&1)
+
+  # TODO: use common password list
+  printf "123456\nqwerty\npassword\nletmein\nsecret\niloveyou\nmonkey\nwelcome\ndragon\nmaster\nhello" > /tmp/password.db
+
+  ret=$(hydra -l $username -P /tmp/password.db 127.0.0.1 -t 4 ssh > $log 2>&1 | grep successfully)
+
+  ret=$(cat $log | grep successfully)
+
+  if [ "$ret" == "" ]; then 
+       username=""
+  fi
+
+  echo -n "{\"principal\":\"$principal\", \"username\":\"$username\", \"host\":\"$host\""}

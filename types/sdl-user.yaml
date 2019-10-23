@@ -1,0 +1,104 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+relationship_types:
+  sdl.relationships.GetsUsername:
+    derived_from: tosca.relationships.Root
+    interfaces:   
+      Configure:
+        pre_configure_source: 
+          implementation: 
+            primary: global-scripts/User/getsusername-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+
+  sdl.relationships.GetsPassword:
+    derived_from: tosca.relationships.Root
+    interfaces:   
+      Configure:
+        pre_configure_source: 
+          implementation: 
+            primary: global-scripts/User/getspassword-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+
+capability_types:
+  sdl.capabilities.UserContainer:
+    derived_from: sdl.capabilities.Root
+
+node_types:
+  sdl.nodes.User:
+    derived_from: sdl.nodes.Root
+    attributes:
+      username:
+        type: string
+        default: ""
+      password: 
+        type: string
+        default: ""
+      # home:
+      #   type: string
+      #   default: ""
+    properties:
+      # datalog rules
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: { hasUser: "+ hasUser('$this{tosca_id}', '$this=>system=>host{tosca_id}', '$this[password]', '$this[role]')" }
+      username:
+        type: string
+        required: yes
+      groups:
+        type: list
+        entry_schema:
+         type: string
+      role:
+        type: string
+        constraints:
+        - valid_values: [ admin, user ]
+        default: user
+        required: yes
+      password:
+        type: string
+        required: no
+      home:
+        type: string
+        required: no
+      # TODO: keypair support, groups support
+      # credential:
+      #   type: tosca.datatypes.Credential
+      #   required: no
+    capabilities:
+      vulnerability:
+       type: sdl.capabilities.VulnerabilityContainer
+      privilege:
+       type: sdl.capabilities.PrivilegeProvider
+
+  sdl.nodes.User.Linux:
+    derived_from: sdl.nodes.User
+    properties:
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+         hasUser: "!include hasuser-linux.yaml" 
+    requirements:
+      - system:
+         capability: sdl.capabilities.UserContainer
+         node: sdl.nodes.System.Linux
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/User/linux/user-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"

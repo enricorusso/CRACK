@@ -1,0 +1,135 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+node_types:
+  # System node ##########
+
+  sdl.nodes.System:
+    derived_from: sdl.nodes.Root
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+         isConnected: "+ isConnected('$this=>host{tosca_id}', '$this=>host=>port=>subnet{tosca_id}')"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+      hostname:
+        description: hostname without domain
+        type: string
+        required: true
+      domain:
+        type: string
+      dns:
+        description: list of dns servers
+        type: list
+        entry_schema:
+          type: string
+    requirements:
+      - host:
+          capability: tosca.capabilities.Container
+          node: tosca.nodes.Compute
+          relationship: tosca.relationships.HostedOn 
+    capabilities:
+      vulnerabilty:
+          type: sdl.capabilities.VulnerabilityContainer
+      user:
+          type: sdl.capabilities.UserContainer
+
+  sdl.nodes.System.Linux:
+    derived_from: sdl.nodes.System
+    properties:
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+         isConnected: "!include isconnected-linux.yaml"         
+    capabilities:
+      configuration:
+       type: sdl.capabilities.ConfigurationContainer.Linux
+      software:
+       type: sdl.capabilities.SoftwareContainer
+    interfaces:
+      Standard:
+        configure: 
+          implementation: 
+            primary: global-scripts/Configuration/linux/linuxsystem-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+    
+  # Firewall
+
+  sdl.nodes.Firewall:
+    derived_from: sdl.nodes.System
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+         isRouter: "+ isRouter('$this=>host{tosca_id}')"
+         existsRoute: "+ existsRoute('$this=>host=>port=>subnet{tosca_id}','$this=>host=>port=>subnet{tosca_id}','$this=>host{tosca_id}')"
+    requirements:
+      - defaultgw:
+          node: aria.openstack.nodes.Port
+          capability: tosca.capabilities.Node
+          occurrences: [ 0, UNBOUNDED ]
+
+  sdl.nodes.Firewall.UFW:
+    derived_from: sdl.nodes.Firewall
+    properties:
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+         isConnected: "!include isconnected-linux.yaml"
+         isRouter: "!include isrouter-linux.yaml"
+         existsRoute: "!include existsroute-linux.yaml"  
+    capabilities:
+     configuration:
+      type: sdl.capabilities.ConfigurationContainer.Linux
+    interfaces:
+      Standard:
+        configure: 
+          implementation: 
+            primary: global-scripts/Configuration/ufw/ufw-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
+  sdl.nodes.Firewall.VyOS:
+    derived_from: sdl.nodes.Firewall
+    properties:
+    properties:
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+         isConnected: "!include isconnected-vyos.yaml"
+         isRouter: "!include isrouter-linux.yaml"
+         existsRoute: "!include existsroute-linux.yaml"  
+    capabilities:
+     configuration:
+      type: sdl.capabilities.ConfigurationContainer.VyOS

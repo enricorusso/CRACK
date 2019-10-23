@@ -1,0 +1,70 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+node_types:
+  sdl.nodes.Goal:
+    derived_from: tosca.nodes.Root
+    properties:
+      description:
+        type: string
+        required: yes
+  
+  sdl.nodes.Goal.CanReach:
+    derived_from: sdl.nodes.Goal
+    properties:
+      description:
+        type: string
+        default: "$this=>system=>host{tosca_id} can reach $this=>server=>swcontainer=>host{tosca_id} on port $this=>server[port]/$this=>server[protocol]"
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: { goal: "print(hostACL('$this=>system=>host{tosca_id}','$this=>server=>swcontainer=>host{tosca_id}','$this=>server[protocol]','$this=>server[port]'))" }
+    requirements:
+      - system:
+          node: sdl.nodes.System
+          capability: sdl.capabilities.GoalProvider
+      - server:
+          node: sdl.nodes.Software.Server
+          capability: sdl.capabilities.GoalProvider
+
+  sdl.nodes.goal.GainPrivilege:
+    derived_from: sdl.nodes.Goal
+    properties:
+      description:
+        type: string
+        default: "$this=>principal{tosca_id} has $this=>privilege[role] privilege on $this=>privilege=>system{tosca_id}"
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          hasAccount: "print(hasAccount('$this=>principal{tosca_id}', '$this=>privilege=>system=>host{tosca_id}', '$this=>privilege{tosca_id}'))"
+    requirements:
+      - principal:
+          capability: sdl.capabilities.PrincipalProvider
+          node: sdl.nodes.Principal
+      - privilege:
+          capability: sdl.capabilities.PrivilegeProvider
+          node: sdl.nodes.User
+
+  sdl.nodes.Goal.Knows:
+    derived_from: sdl.nodes.Goal
+    properties:
+      knowledge:
+        type: string
+        required: true
+      description:
+        type: string
+        default: "$this=>principal[name] knows $this[knowledge]"
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: { goal: "print(knows('$this=>principal{tosca_id}', '$this[knowledge]'))" }
+    requirements:
+      - principal:
+          node: sdl.nodes.Principal
+          capability: sdl.capabilities.GoalProvider

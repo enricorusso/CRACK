@@ -1,0 +1,55 @@
+topology_template:
+   node_templates:    
+
+    # client
+
+    client_simint1_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: client_simint1_port
+        fixed_ip: { get_input: client_simint1_ip }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+      #  - security_group: allowall
+        - subnet: Simint1_subnet
+        - network: Simint1
+
+    client:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: kali-image }
+        flavor: m1.large
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: client
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+        server:
+          userdata: { get_input: ubuntu1604_init }     
+      requirements:
+        - key_pair: keypair
+        - port: client_simint1_port
+
+    # SDL #
+
+    client_system:
+      type: sdl.nodes.System.Linux
+      properties:
+        hostname: { get_input: client_hostname }
+        domain: { get_input: client_domain }
+        dns: { get_input: client_dns }
+      requirements:
+        - host: client
+
+    client_user1:
+      type: sdl.nodes.User.Linux
+      properties:
+        username: { get_input: client_user_username }
+        password: { get_input: client_user_password }
+        role: admin
+        groups:
+          - sudo
+      requirements:
+        - system: client_system

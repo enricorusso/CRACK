@@ -1,0 +1,154 @@
+topology_template:
+  inputs:
+    ubuntu1604_init:
+      type: string
+      default: |
+        #!/bin/bash
+
+        SDLUSR="sdlmgmt"
+        DHCPDNS="192.168.168.2"
+
+        which python || (echo "This script requires python" && exit -1);
+        which curl || (echo "This script requires curl" && exit -1);
+        which ip || (echo "This script requires ip" && exit -1);
+
+        if [ ! -f /etc/network/interfaces ] ; then
+                echo "Interface file not supported"
+                exit -1
+        fi
+        netdata=$(curl --fail -s 169.254.169.254/openstack/latest/network_data.json)
+        if [ ! 0 -eq $? ]; then
+            echo \"Error contacting metadata server\" 
+            exit -1
+        fi
+        mv /etc/network/interfaces /etc/network/interfaces.ORIG
+        echo "auto lo" > /etc/network/interfaces
+        echo "iface lo inet loopback" >> /etc/network/interfaces
+        echo >> /etc/network/interfaces
+        gw=0
+        counter=0
+        ip a | grep '^[[:digit:]]*: ' | cut -d: -f 2 | cut -c 2- |
+        while read int 
+        do
+          if [ "$int" != "lo" ]; then
+              network_type=$(echo $netdata | python -c "import sys, json; print json.load(sys.stdin)['networks'][$counter]['type']")
+              echo "auto $int" >> /etc/network/interfaces
+              if [[ $network_type != *"dhcp"* ]]; then 
+                ip_address=$(echo $netdata | python -c "import sys, json; print json.load(sys.stdin)['networks'][$counter]['ip_address']")
+                netmask=$(echo $netdata | python -c "import sys, json; print json.load(sys.stdin)['networks'][$counter]['netmask']")
+                gateway=$(echo $netdata | python -c "import sys, json; data = json.load(sys.stdin); print data['networks'][$counter]['routes'][0]['gateway'] if data['networks'][$counter]['routes'] else 'None'")
+                echo "iface $int inet static" >> /etc/network/interfaces
+
+                echo " address $ip_address" >> /etc/network/interfaces
+                echo " netmask $netmask" >> /etc/network/interfaces
+                if [[ $gw -eq 0 ]]; then
+                    if [[ $gateway != *"None"* ]]; then
+                        if [[ $gateway != $ip_address ]]; then
+                            echo " gateway $gateway" >> /etc/network/interfaces
+                            gw=1
+                        fi
+                    fi
+                fi
+                echo " post-up ip link set $int mtu 1400" >> /etc/network/interfaces
+                echo >> /etc/network/interfaces
+              else
+                echo "iface $int inet dhcp" >> /etc/network/interfaces
+                echo " post-up ip link set $int mtu 1400" >> /etc/network/interfaces
+                echo >> /etc/network/interfaces
+              fi
+
+            counter=$(expr $counter + 1)
+          fi
+        done
+
+        service networking restart
+        sed -i 's/domain-name,/host-name, #/g' /etc/dhcp/dhclient.conf
+        service networking reload
+
+        metadata=$(curl --fail -s 169.254.169.254/openstack/latest/meta_data.json)
+
+        key=$(echo $metadata | python -c "import sys, json; print json.load(sys.stdin)['public_keys'].items()[0][1]")
+
+        sudo adduser \
+          --system \
+          --shell /bin/bash \
+          --gecos "User for SDL orchestration" \
+          --group \
+          --disabled-password \
+          --home /home/$SDLUSR \
+          $SDLUSR
+
+        echo "$SDLUSR ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/99-sdl-users
+
+        mkdir /home/$SDLUSR/.ssh
+        echo $key > /home/$SDLUSR/.ssh/authorized_keys
+        chown -R $SDLUSR.$SDLUSR /home/$SDLUSR/.ssh/
+
+        sed -i 's/archive./it.archive./g' /etc/apt/sources.list
+
+    vyos118_init:
+      type: string
+      default: |
+        #!/bin/vbash
+        source /opt/vyatta/etc/functions/script-template
+
+        SDLUSR="sdlmgmt"
+
+        ip route add 169.254.169.254/32 dev eth0
+
+        netdata=$(curl --fail -s http://169.254.169.254/openstack/latest/network_data.json)
+
+        configure
+
+        gw=0
+        counter=0
+        ip a | grep '^[[:digit:]]*: ' | cut -d: -f 2 | cut -c 2- |
+        while read int 
+        do
+        if [ "$int" != "lo" ]; then
+            network_type=$(echo $netdata | python -c "import sys, json; print json.load(sys.stdin)['networks'][$counter]['type']")
+            if [[ $network_type != *"dhcp"* ]]; then 
+                echo $int
+                ip_address=$(echo $netdata | python -c "import sys, json; print json.load(sys.stdin)['networks'][$counter]['ip_address']")
+                netmask=$(echo $netdata | python -c "import sys, json; print sum([bin(int(x)).count('1') for x in json.load(sys.stdin)['networks'][$counter]['netmask'].split('.')])")
+                gateway=$(echo $netdata | python -c "import sys, json; data = json.load(sys.stdin); print data['networks'][$counter]['routes'][0]['gateway'] if data['networks'][$counter]['routes'] else 'None'")
+                  
+                #echo $ip_address $netmask $gateway
+                set interfaces ethernet $int address $ip_address/$netmask
+
+                if [[ $gw -eq 0 ]]; then
+                    if [[ $gateway != *"None"* ]]; then
+                        if [[ $gateway != $ip_address ]]; then
+                            set system gateway-address
+                            gw=1
+                        fi
+                    fi
+                fi
+            else
+                set interfaces ethernet $int address dhcp
+            fi
+
+            counter=$(expr $counter + 1)
+        fi
+        done
+
+        chown -R root:vyattacfg /opt/vyatta/config/active/
+
+        metadata=$(curl --fail -s 169.254.169.254/openstack/latest/meta_data.json)
+
+        key=$(echo $metadata | python -c "import sys, json; print json.load(sys.stdin)['public_keys'].items()[0][1]")
+
+        t=$(echo $key | cut -d' ' -f 1)
+        k=$(echo $key | cut -d' ' -f 2)
+
+        echo $t $k
+
+        set system login user $SDLUSR
+        set system login user $SDLUSR level admin
+        set system login user $SDLUSR authentication public-keys $SDLUSR-key type $t
+        set system login user $SDLUSR authentication public-keys $SDLUSR-key key $k
+
+        ip route del 169.254.169.254/32 dev eth0
+        commit
+        save
+        exit

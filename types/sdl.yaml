@@ -1,0 +1,108 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+imports:
+  - sdl-user.yaml
+  - sdl-vuln.yaml
+  - sdl-software.yaml
+  - sdl-system.yaml
+  - sdl-configuration.yaml
+  - sdl-principal.yaml
+  - sdl-goal.yaml
+  - sdl-invariant.yaml
+  - sdl-init.yaml
+
+policy_types:
+  ValidateWorkflow:
+    derived_from: aria.Workflow
+    properties:
+      implementation:
+        type: string
+        default: aria.orchestrator.workflows.sdl.validate
+      output_directory:
+        type: string
+        default: /tmp
+
+  TestWorkflow:
+    derived_from: aria.Workflow
+    properties:
+      implementation:
+        type: string
+        default: aria.orchestrator.workflows.sdl.test
+      output_directory:
+        type: string
+        default: /tmp
+      username:
+        type: string
+      key_path:
+        type: string
+      runtime_path:
+        type: string
+      proxy_ip:
+        type: string
+      proxy_port:
+        type: integer
+
+  GraphWorkflow:
+    derived_from: aria.Workflow
+    properties:
+      implementation:
+        type: string
+        default: aria.orchestrator.workflows.sdl.creategraph
+
+relationship_types:
+  sdl.relationships.Root:
+    derived_from: tosca.relationships.Root
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+
+capability_types:
+  sdl.capabilities.Root:
+    derived_from: tosca.capabilities.Root
+
+  sdl.capabilities.KnowledgeProvider:
+    derived_from: tosca.capabilities.Root
+
+  sdl.capabilities.UserContainer:
+    derived_from: tosca.capabilities.Root
+
+  sdl.capabilities.ArtifactContainer:
+    derived_from: tosca.capabilities.Root
+
+  sdl.capabilities.PrivilegeProvider:
+    derived_from: tosca.capabilities.Root
+
+  sdl.capabilities.PrincipalProvider:
+    derived_from: tosca.capabilities.Root
+
+  sdl.capabilities.GoalProvider:
+    derived_from: tosca.capabilities.Root
+
+node_types:
+  sdl.nodes.Root:
+    ### (ARIA TOSCA) Compute host capability requires tosca.nodes.SoftwareComponent as a valid source type
+    derived_from: tosca.nodes.SoftwareComponent
+    properties:
+     behavior:
+      type: map
+      entry_schema:
+        type: string
+      required: no
+     runtime:
+      type: map
+      entry_schema:
+        type: string
+      required: no
+    capabilities:
+     knowledge:
+      type: sdl.capabilities.KnowledgeProvider
+     goal:
+      type: sdl.capabilities.GoalProvider

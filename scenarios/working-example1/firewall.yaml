@@ -1,0 +1,82 @@
+topology_template:
+   node_templates:    
+
+    FW_Server_port:
+        type: aria.openstack.nodes.Port
+        properties:
+          use_external_resource: true
+          create_if_missing: true
+          resource_id: FW_Inside_port
+          fixed_ip: { get_input: firewall_server_ip }
+          openstack_config: { get_input: openstack_config }
+        requirements:
+        #  - security_group: allowall
+          - subnet: Server_subnet
+          - network: Server
+
+    FW_Outside_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: FW_Outside_port
+        fixed_ip: { get_input: firewall_outside_ip }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+      #  - security_group: allowall
+        - subnet: Outside_subnet
+        - network: Outside
+
+    FW_DMZ_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: FW_DMZ_port
+        fixed_ip: { get_input: firewall_dmz_ip }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+      #  - security_group: allowall
+        - subnet: DMZ_subnet
+        - network: DMZ
+
+    Firewall:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: ubuntu1604-image }
+        flavor: { get_input: flavor }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: firewall
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+        server:
+          userdata: { get_input: ubuntu1604_init }     
+      requirements:
+        - key_pair: keypair
+        - port: FW_Server_port
+        - port: FW_Outside_port
+        - port: FW_DMZ_port
+
+    # SDL #
+
+    Firewall_UFW:
+      type: sdl.nodes.Firewall.UFW
+      requirements:
+        - host: Firewall
+
+    Firewall_InitPermissive:
+      type: sdl.nodes.Configuration.Firewall.Init.Permissive.UFW
+      properties:
+        masquerade_addresses:
+         - { get_property: [ FW_Outside_port, fixed_ip ] }
+      requirements:
+         - firewall: Firewall_UFW
+
+    Firewall_DefaultRoute1:
+      type: sdl.nodes.Configuration.DefaultRoute.Firewall.UFW
+      properties:
+        address: 1.2.3.4
+      requirements:
+         - default_network: Outside_subnet
+         - firewall: Firewall_UFW

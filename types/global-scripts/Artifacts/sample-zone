@@ -1,0 +1,12 @@
+$TTL 3600	
+$ORIGIN ${domain}.
+@  1D  IN  SOA ${hostname}.${domain}. hostmaster.${domain}. (
+			      1 ; serial
+			      3H ; refresh
+			      15 ; retry
+			      1w ; expire
+			      3h ; nxdomain ttl
+			     )
+       IN  NS     ${hostname}.${domain}.
+
+${hostname}    IN  A      ${ip}

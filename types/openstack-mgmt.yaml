@@ -1,0 +1,19 @@
+topology_template:
+  node_templates:
+    sdl-mgmt:
+      type: aria.openstack.nodes.Network
+      properties:
+        resource_id: sdl-mgmt
+        use_external_resource: true
+        create_if_missing: false
+        openstack_config: { get_input: openstack_config }
+
+    sdl-mgmt-subnet:
+      type: aria.openstack.nodes.Subnet
+      properties:
+        resource_id: sdl-mgmt-subnet
+        use_external_resource: true
+        create_if_missing: false
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - network: sdl-mgmt

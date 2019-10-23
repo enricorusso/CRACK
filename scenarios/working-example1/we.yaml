@@ -1,0 +1,75 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+imports:
+  - config.yaml
+  - network.yaml
+  - firewall.yaml
+  - provider.yaml
+  - db.yaml
+  - www.yaml
+  - ns.yaml
+  - root-ns.yaml
+  - client.yaml
+  - aria-1.0
+  - ../types/openstack-plugin.yaml
+  - ../types/openstack-mgmt.yaml
+  - ../types/sdl.yaml
+
+topology_template:    
+  ## workflow for creating model
+  policies:
+    validate:
+      type: ValidateWorkflow
+      properties:
+        output_directory: ~/git/SDL/scenarios/output/we1/
+    test:
+      type: TestWorkflow
+      properties:
+        output_directory: ~/git/SDL/scenarios/output/we1/
+        username: sdlmgmt
+        key_path: ~/.ssh/ex1-sdl
+        runtime_path: ~/git/SDL/types/runtimes
+        proxy_ip: 192.168.168.1
+        proxy_port: 80
+    creategraph:
+      type: GraphWorkflow
+
+  node_templates:    
+    keypair:
+      type: aria.openstack.nodes.KeyPair
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: { get_input: private_key_name }
+        private_key_path: { get_input: private_key_path }
+        openstack_config: { get_input: openstack_config }
+
+    ### SDL ###
+
+    eve:
+      type: sdl.nodes.Principal
+      properties:
+        name: eve
+      requirements:
+        - knowledge: 
+            node: client_user1
+            relationship: sdl.relationships.Knowledge.GetsCredentials
+
+    # goal1:
+    #   type: sdl.nodes.Goal.CanReach
+    #   requirements:
+    #     - system: client_system
+    #     - server: www_ssh
+
+    # goal1:
+    #   type: sdl.nodes.Goal.GetPrivilege
+    #   requirements:
+    #     - principal: eve
+    #     - privilege: www_root
+
+    goal1:
+      type: sdl.nodes.Goal.Knows
+      properties:
+        knowledge: DB_confidential
+      requirements:
+        - principal: eve

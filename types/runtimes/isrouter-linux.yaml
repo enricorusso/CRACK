@@ -1,0 +1,23 @@
+execute: remote
+script: |
+    #!/bin/bash
+    
+    function getParam() {
+     if [ "$1" != "null" ]; then
+         echo $1 | cut -d\" -f 2
+     else
+         echo ""
+     fi
+    }
+    
+    host=$(getParam $1)
+    protocol=$(getParam $2)
+    port=$(getParam $3)
+    
+    ret=$(sysctl net.ipv4.ip_forward | cut -d' ' -f 3)
+
+    if [ "$ret" != "1" ]; then
+       host="" 
+    fi
+
+    echo -n "{\"host\":\"$host\"}"

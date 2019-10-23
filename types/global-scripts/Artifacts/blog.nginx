@@ -1,0 +1,19 @@
+server {
+    listen 80;
+    server_name localhost;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location /static/ {
+        root /usr/local/mezzanine_env/blog;
+    }
+
+    location /media/ {
+        root /usr/local/mezzanine_env/blog/static;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix://usr/local/mezzanine_env/blog/blog.sock;
+    }
+}

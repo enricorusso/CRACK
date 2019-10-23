@@ -1,0 +1,54 @@
+execute: remote
+script: |
+      #!/bin/bash
+        
+      set -e
+      
+      function getParam() {
+       if [ "$1" != "null" ]; then
+           echo ${1:1:-1}
+       else
+           echo "" 
+       fi
+      }
+    
+      v4dec() {
+       for i; do
+        echo $i | {
+        IFS=./
+        read a b c d e
+        test -z "$e" && e=32
+        echo -n "$((a<<24|b<<16|c<<8|d)) $((-1<<(32-e))) "
+        }
+       done
+      }
+    
+      v4test() {
+       v4dec $1 $2 | {
+        read addr1 mask1 addr2 mask2
+        if (( (addr1&mask2) == (addr2&mask2) && mask1 >= mask2 )); then
+           echo "$1 is in network $2"
+        else
+           echo ""
+        fi
+        }  
+      }
+    
+      host=$(getParam $1)
+      address=$(getParam $2)
+    
+      echo -n "{\"host\":\"$host\",\"address\":"
+    
+      echo -n "["
+    
+      ret=$(ip a | grep "inet " | cut -d' ' -f 6 |
+      while read ip
+      do
+       r=$(v4test $ip $address)
+       if [ "$r" != "" ]; then
+           echo $ret,\"$ip\"
+       fi
+      done)
+    
+      echo -n ${ret:1}
+      echo "]}"

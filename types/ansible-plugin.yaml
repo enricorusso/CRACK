@@ -1,0 +1,150 @@
+#plugins:
+#
+#  ansible:
+#    executor: central_deployment_agent
+#    source: https://github.com/cloudify-cosmo/cloudify-ansible-plugin/archive/2.4.0.zip
+#    package_name: cloudify-ansible-plugin
+#    package_version: '2.4.0'
+
+topology_template:
+  policies:
+    cloudify-ansible-plugin:
+      description: >-
+        ansible plugin executes operations.
+      type: aria.Plugin
+      properties:
+        version: 1.1
+
+#node_types:
+#
+#  cloudify.nodes.ansible.Executor:
+#    derived_from: cloudify.nodes.Root
+#    properties:
+#      playbook_path:
+#        type: string
+#        default: ""
+#        description: >
+#          A path to your `site.yaml` or `main.yaml` in your
+#          Ansible Playbook.
+#      site_yaml_path:
+#        type: string
+#        default: ""
+#        description: >
+#          DEPRECATED.
+#          A path to your `site.yaml` or `main.yaml` in your
+#          Ansible Playbook.
+#      sources:
+#       type: string
+#       default: ""
+#       description: >
+#         Your Inventory sources. Either YAML or a path to a file.
+#         If not provided the inventory will be take from the `sources`
+#         runtime property.
+#      run_data:
+#        default: {}
+#        description: >
+#         Variable values.
+#      options_config:
+#        default: {}
+#        description: >
+#         Command-line options, such as `tags` or `skip_tags`.
+#      ansible_env_vars:
+#        default:
+#          ANSIBLE_HOST_KEY_CHECKING: "False"
+#        description: >
+#          A dictionary of environment variables to set.
+#      debug_level:
+#        type: integer
+#        default: 2
+#        description: >
+#          Debug level
+#      additional_args:
+#        type: string
+#        description: >
+#          Additional args that you want to use, for example, '-c local'.
+#        default: ''
+#      save_playbook:
+#        type: boolean
+#        description: >
+#          Save playbook after action
+#        default: false
+#      remerge_sources:
+#        type: boolean
+#        description: >
+#          update sources on target node
+#        default: false
+#      ansible_become:
+#        type: boolean
+#        description: >
+#          A boolean value, `true` or `false` whether
+#          to assume the user privileges.
+#        default: false
+#    interfaces:
+#      cloudify.interfaces.lifecycle:
+#        start:
+#          implementation: ansible.cloudify_ansible.tasks.run
+#          inputs:
+#            playbook_path:
+#              default: { get_property: [SELF, playbook_path] }
+#            site_yaml_path:
+#              default: { get_property: [SELF, site_yaml_path] }
+#            save_playbook:
+#              default: { get_property: [SELF, save_playbook] }
+#            remerge_sources:
+#              default: { get_property: [SELF, remerge_sources] }
+#            sources:
+#              default: { get_property: [SELF, sources] }
+#            run_data:
+#              default: { get_property: [SELF, run_data] }
+#            options_config:
+#              default: { get_property: [SELF, options_config] }
+#            ansible_env_vars:
+#              default: { get_property: [SELF, ansible_env_vars] }
+#            debug_level:
+#              default: { get_property: [SELF, debug_level] }
+#            additional_args:
+#              default: { get_property: [SELF, additional_args] }
+#        delete:
+#          implementation: ansible.cloudify_ansible.tasks.cleanup
+#
+#relationships:
+#
+#  cloudify.ansible.relationships.connected_to_host:
+#    derived_from: cloudify.relationships.connected_to
+#    source_interfaces:
+#      cloudify.interfaces.relationship_lifecycle:
+#        preconfigure:
+#          implementation: ansible.cloudify_ansible.tasks.ansible_requires_host
+#          inputs:
+#            group_name:
+#              default: ""
+#              description: >
+#                Ansible node group name
+#            hostname:
+#              default: ""
+#              description: >
+#                Hostname
+#            host_config:
+#              default: {}
+#              description: >
+#                Host configuration:
+#                  ansible_host: The hostname or IP address of the host to SSH
+#                    into.
+#                  ansible_user: The username to SSH with.
+#                  ansible_ssh_private_key_file: The private key file to SSH
+#                    with.
+#                  ansible_become: A boolean value, `true` or `false` whether
+#                    to assume the user privileges.
+#                  ansible_ssh_common_args: Additional arguments to the SSH
+#                    command, by default: '-o StrictHostKeyChecking=no'
+#        unlink:
+#          implementation: ansible.cloudify_ansible.tasks.ansible_remove_host
+#          inputs:
+#            group_name:
+#              default: ""
+#              description: >
+#                Ansible node group name
+#            hostname:
+#              default: ""
+#              description: >
+###                Hostname

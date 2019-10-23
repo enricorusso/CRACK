@@ -1,0 +1,23 @@
+execute: remote
+script: |
+    #!/bin/bash
+    
+    function getParam() {
+     if [ "$1" != "null" ]; then
+         echo $1 | cut -d\" -f 2
+     else
+         echo ""
+     fi
+    }
+    
+    srcnet=$(getParam $1)
+    dstnet=$(getParam $2)
+    host=$(getParam $3)
+    
+    route=$(ip r | cut -d' ' -f 1 | grep "$dstnet\|default")
+
+    if [ "$?" != "0" ]; then
+        $dstnet = ""
+    fi
+
+    echo -n "{\"host\":\"$host\",\"srcnet\":\"$srcnet\",\"dstnet\":\"$dstnet\"}"

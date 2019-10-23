@@ -1,0 +1,58 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+relationship_types:
+  sdl.relationships.Knowledge.GetsCredentials:
+    derived_from: sdl.relationships.Root
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        default: 
+         hasAccount: "+ hasAccount('$this.src{tosca_id}', '$this.dst.node=>system=>host{tosca_id}','$this.dst.node{tosca_id}')"
+    # interfaces:   
+    #   Configure:
+    #     pre_configure_source: 
+    #       implementation: 
+    #         primary: global-scripts/Configuration/getspath-configure.sh
+    #         dependencies:
+    #           - "ssh.user > { get_input: ssh_username }"
+    #           - "ssh.key_filename > { get_input: private_key_path }"
+    #           - "ssh.use_sudo > true"
+
+node_types:
+  ## Principal ##
+
+  sdl.nodes.Principal:
+    derived_from: sdl.nodes.Root
+    attributes:
+      username:
+        type: string
+      password:
+        type: string
+    properties:
+      name:
+        type: string
+        required: true
+      role:
+        type: string
+        constraints:
+        - valid_values: [ red, blue, green, white, yellow ]
+      # behavior:
+      #   type: map
+      #   entry_schema:
+      #     type: string
+      #   required: no
+      #   default: 
+      #    hasAccount: "+ hasAccount('$this{tosca_id}', '$this=>user=>system=>host{tosca_id}', '$this=>user{tosca_id}')"
+    requirements:
+      # - user:
+      #     capability: sdl.capabilities.PrivilegeProvider
+      - knowledge:
+          capability: sdl.capabilities.KnowledgeProvider
+          node: sdl.nodes.Root
+          relationship: sdl.relationships.Root
+          #occurrences: [ 0, UNBOUNDED ]
+    capabilities:
+      principal:
+        type: sdl.capabilities.PrincipalProvider      

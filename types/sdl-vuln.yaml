@@ -1,0 +1,227 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+capability_types:
+  sdl.capabilities.VulnerabilityContainer:
+      derived_from: tosca.capabilities.Root
+
+relationship_types:
+  sdl.relationships.SetsEnumerableUsername.Linux:
+    derived_from: tosca.relationships.Root
+    interfaces:
+        Configure:
+          pre_configure_target: 
+            implementation: 
+              primary: global-scripts/Vulnerability/linux/enumerableusername-configure.sh
+              dependencies:
+                - "ssh.user > { get_input: ssh_username }"
+                - "ssh.key_filename > { get_input: private_key_path }"
+                - "ssh.use_sudo > true"
+
+  sdl.relationships.SetsWeakPassword.Linux:
+    derived_from: tosca.relationships.Root
+    interfaces:
+        Configure:
+          pre_configure_target: 
+            implementation: 
+              primary: global-scripts/Vulnerability/linux/remoteweakpassword-configure.sh
+              dependencies:
+                - "ssh.user > { get_input: ssh_username }"
+                - "ssh.key_filename > { get_input: private_key_path }"
+                - "ssh.use_sudo > true"
+
+
+node_types:
+  sdl.nodes.Vulnerability:
+    derived_from: sdl.nodes.Root
+
+  sdl.nodes.Vulnerability.Linux:
+    derived_from: sdl.nodes.Vulnerability
+
+  ## Linux Escalation of Privilege ##
+
+  sdl.nodes.Vulnerability.Linux.EOP:
+    derived_from: sdl.nodes.Vulnerability.Linux
+
+  ###### Linux Privilege Escalation – Using apt-get/apt/dpkg to abuse sudo “NOPASSWD” misconfiguration 
+  ###### (https://lsdsecurity.com/2019/01/linux-privilege-escalation-using-apt-get-apt-dpkg-to-abuse-sudo-nopasswd-misconfiguration/)
+  ###### exploit: sudo apt-get update -o APT::Update::Pre-Invoke::="/bin/bash -i"
+  sdl.nodes.Vulnerability.Linux.EOP.APT:
+    derived_from: sdl.nodes.Vulnerability
+    attributes:
+      fromUser:
+        type: string
+      toUser:
+        type: string
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          hasAccount: "hasAccount(A, '$this=>toUser=>system=>host{tosca_id}', '$this=>toUser{tosca_id}') <= 
+          hasUser('$this=>toUser{tosca_id}', '$this=>toUser=>system=>host{tosca_id}', P, R) & 
+          hasAccount(A, '$this=>fromUser=>system=>host{tosca_id}', '$this=>fromUser{tosca_id}')"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default:
+          hasAccount: "!include hasaccount-linux-eopapt.yaml"     
+    requirements:
+      - fromUser:
+          capability: sdl.capabilities.PrivilegeProvider
+          relationship: sdl.relationships.GetsUsername
+          node: sdl.nodes.User.Linux
+      - toUser:
+          capability: sdl.capabilities.PrivilegeProvider
+          relationship: sdl.relationships.GetsUsername
+          node: sdl.nodes.User.Linux
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Vulnerability/linux/eopapt-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
+  ## Linux Users ##
+
+  sdl.nodes.Vulnerability.Linux.User:
+    derived_from: sdl.nodes.Vulnerability.Linux
+    attributes:
+      user:
+        type: string
+      password:
+        type: string
+
+
+  sdl.nodes.Vulnerability.Linux.User.RemoteWeakPassword:
+    derived_from: sdl.nodes.Vulnerability.Linux.User
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          hasAccount: "hasAccount(A, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>user{tosca_id}') <= 
+          knows(A, '$this=>user[username]') &
+          hasUser('$this=>user{tosca_id}', '$this=>host{tosca_id}', P, R) & 
+          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
+          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
+          hasAccount(A, K, V)"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default:
+          hasAccount: "!include hasaccount-linux-remotesshweakpass.yaml"     
+    requirements:
+      - user:
+         capability: sdl.capabilities.PrivilegeProvider
+         relationship: sdl.relationships.SetsWeakPassword.Linux
+         node: sdl.nodes.User.Linux
+      - server:
+          capability: sdl.capabilities.VulnerabilityContainer
+          node: sdl.nodes.Software.Server 
+    # interfaces:
+    #   Standard:
+    #     configure:
+    #       implementation:
+    #         primary: global-scripts/Vulnerability/linux/remoteweakpassword-configure.sh
+    #         dependencies:
+    #           - "ssh.user > { get_input: ssh_username }"
+    #           - "ssh.key_filename > { get_input: private_key_path }"
+    #           - "ssh.use_sudo > true"
+    #       inputs:
+    #         proxy_url: 
+    #           type: string
+    #           default: { get_input: proxy_url }
+
+  sdl.nodes.Vulnerability.Linux.User.RemoteEnumerable:
+    derived_from: sdl.nodes.Vulnerability.Linux.User
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          knows: "knows(A, '$this=>user[username]') <= 
+          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
+          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
+          hasAccount(A, K, V)"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default:
+          knows: "!include knows-linux-httpenumerable.yaml"     
+    requirements:
+      - user:
+         capability: sdl.capabilities.PrivilegeProvider
+         relationship: sdl.relationships.SetsEnumerableUsername.Linux
+         node: sdl.nodes.User.Linux
+      - server:
+          capability: sdl.capabilities.VulnerabilityContainer
+          node: sdl.nodes.Software.Server
+
+  # RCE
+
+  sdl.nodes.Vulnerability.Linux.RCE:
+    derived_from: sdl.nodes.Vulnerability.Linux
+
+  
+  sdl.nodes.Vulnerability.Linux.RCE.Mezzanine.Werkzeug:
+    derived_from: sdl.nodes.Vulnerability.Linux.RCE
+    attributes:
+      path:
+        type: string
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          hasAccount: "hasAccount(A, '$this=>server=>container=>swcontainer=>host{tosca_id}', '$this=>server=>user{tosca_id}') <= 
+          hasUser('$this=>server=>user{tosca_id}', '$this=>server=>container=>swcontainer=>host{tosca_id}', P, R) &
+          listeningOn('$this=>server=>container=>swcontainer=>host{tosca_id}', '$this=>server=>container[protocol]', '$this=>server=>container[port]') & 
+          hostACL(K, '$this=>server=>container=>swcontainer=>host{tosca_id}', '$this=>server=>container[protocol]', '$this=>server=>container[port]') & 
+          hasAccount(A, K, V)"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default:
+          hasAccount: "!include hasaccount-linux-werkzeug.yaml"
+
+    requirements:
+      - server:
+          capability: sdl.capabilities.VulnerabilityContainer
+          relationship: sdl.relationships.GetsPath
+          node: sdl.nodes.Software.Server.CMS.Linux.Mezzanine
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Vulnerability/linux/mezzanine_werkzeug-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }

@@ -1,0 +1,49 @@
+execute: remote
+script: |
+  #!/bin/bash
+
+  set -e
+
+  function getParam() {
+   if [ "$1" != "null" ]; then
+       echo $1 | cut -d\" -f 2
+   else
+       echo ""
+   fi
+  }
+
+  export http_proxy=""
+  export https_proxy=""
+
+  principal=$(getParam $1)
+  data=$(getParam $2)
+
+  # TODO: choose a random enumerable user from a list..
+  arr[0]="admin"
+  arr[1]="backup"
+  arr[2]="operator"
+  arr[3]="manager"
+  arr[4]="webmaster"
+  arr[5]="demo"
+  arr[6]="sql"
+  arr[7]="dbadmin"
+  arr[8]="helpdesk"
+  arr[9]="sysop"
+
+  echo -n "{\"principal\":\"$principal\", \"data\":"
+
+  echo -n "["
+
+  res=$(for u in "${arr[@]}" 
+  do
+   #curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1/~$u
+   ret=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1/~$u)
+   if [ "$ret" != "404" ]; then 
+       r="$r \"$u\","
+   fi
+  done
+  echo $r)
+
+  res=$(echo $res | rev | cut -c 2- | rev)
+  echo -n $res
+  echo "]}"

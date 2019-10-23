@@ -1,0 +1,34 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+node_types:
+  sdl.nodes.Invariant:
+    derived_from: tosca.nodes.Root
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          existsRoute: existsRoute(N,M,X) <= isConnected(X,N) & isConnected(X,M) & isRouter(X)
+          hostACL1: hostACL(H,K,P,Q) <= listeningOn(K,P,Q) & isConnected(K,N) & isConnected(H,M) & isConnected(S,M) & isRouter(S) & existsRoute(T,N,S)
+          hostACL2: hostACL(H,K,P,Q) <= listeningOn(K,P,Q) & isConnected(H,N) & isConnected(K,N)
+          hasAccount: hasAccount(A,H,U) <= hasUser(U,H,P,R) & knows(A,U) & knows(A,P)
+          #listeningOn: listeningOn(X,P,Q) <= appliesNAT(X,R,H,Q,P)
+          #hostACL3: hostACL(H,K,P,Q) <= hostACL(H,X,P,R) & hostACL(X,K,P,Q) & appliesNAT(X,Q,K,R,P)
+          #bug1: "+ appliesNAT(0, 'a', 1, 'b', 1, 'c')"
+          #bug2: "- appliesNAT(0, 'a', 1, 'b', 1, 'c')"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default:
+          hostACL1: "!include hostacl-linux.yaml"
+          hostACL2: "!include hostacl-linux.yaml"
+          existsRoute: "!include existsroute-linux.yaml"
+
+topology_template:    
+  node_templates:    
+    invariant:
+      type: sdl.nodes.Invariant

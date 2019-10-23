@@ -1,0 +1,483 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+capability_types:
+  sdl.capabilities.ConfigurationContainer:
+    derived_from: sdl.capabilities.Root
+
+  sdl.capabilities.ConfigurationContainer.Linux:
+    derived_from: sdl.capabilities.ConfigurationContainer
+
+  sdl.capabilities.ConfigurationContainer.VyOS:
+    derived_from: sdl.capabilities.ConfigurationContainer
+
+  # HTTP #
+  sdl.capabilities.ConfigurationContainer.HTTP:
+    derived_from: sdl.capabilities.ConfigurationContainer
+
+  # DBMS #
+  sdl.capabilities.ConfigurationContainer.DBMS:
+    derived_from: sdl.capabilities.ConfigurationContainer
+
+  # DNS #
+  sdl.capabilities.ConfigurationContainer.DNS:
+    derived_from: sdl.capabilities.ConfigurationContainer
+
+  sdl.capabilities.ConfigurationContainer.DNS.Zone:
+    derived_from: sdl.capabilities.ConfigurationContainer
+
+  sdl.capabilities.ConfigurationContainer.DNS.Zone.Record:
+    derived_from: sdl.capabilities.ConfigurationContainer
+
+relationship_types:
+  sdl.relationships.GetsPath:
+    derived_from: tosca.relationships.Root
+    interfaces:   
+      Configure:
+        pre_configure_source: 
+          implementation: 
+            primary: global-scripts/Configuration/getspath-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+
+  sdl.relationships.GetsValues:
+    derived_from: tosca.relationships.Root
+    properties:
+      props:
+        type: list
+        entry_schema:
+         type: string
+        required: true        
+    interfaces:   
+      Configure:
+        pre_configure_source: 
+          implementation: 
+            primary: global-scripts/Configuration/getsvalues-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+
+  sdl.relationships.GetsHostname:
+    derived_from: sdl.relationships.GetsValues
+    properties:
+      props:
+        type: list
+        entry_schema:
+         type: string
+        default:
+          - hostname
+
+  sdl.relationships.GetsHostnameIP:
+    derived_from: sdl.relationships.GetsValues
+    properties:
+      props:
+        type: list
+        entry_schema:
+         type: string
+        default:
+          - hostname
+          - address
+
+  sdl.relationships.GetsUsername:
+    derived_from: sdl.relationships.GetsValues
+    properties:
+      props:
+        type: list
+        entry_schema:
+         type: string
+        default:
+          - username
+
+
+data_types:
+  sdl.datatypes.route:
+     derived_from: tosca.datatypes.Root
+     properties:
+      destination:
+        type: string
+        required: true
+      address:
+        type: string
+        required: true
+
+  sdl.datatypes.Configuration.dnsrecord:
+     derived_from: tosca.datatypes.Root
+     properties:
+      name:
+        type: string
+        required: true
+      ttl:
+        type: integer
+        required: true
+        default: 3600
+      type:
+        type: string
+        required: true
+        default: A
+      value:
+        type: string
+        required: true
+
+node_types:
+  sdl.nodes.Configuration:
+    derived_from: sdl.nodes.Root
+  
+  
+  ## ROUTE ##
+
+  sdl.nodes.Configuration.Route:
+    derived_from: sdl.nodes.Configuration
+    properties:
+      destination:
+        type: string
+        required: true
+      address:
+        type: string
+        required: true
+    requirements:
+      - source_network:
+          node: aria.openstack.nodes.Subnet
+          capability: tosca.capabilities.Node
+      - destination_network:
+          node:  aria.openstack.nodes.Network
+          capability: tosca.capabilities.Node
+
+  sdl.nodes.Configuration.DefaultRoute:
+    derived_from: sdl.nodes.Configuration
+    properties:
+      destination:
+        type: string
+        required: true
+        default: 0.0.0.0/0
+      address:
+        type: string
+        required: true
+    requirements:
+      - default_network:
+          node: aria.openstack.nodes.Subnet
+          capability: tosca.capabilities.Node
+
+  sdl.nodes.Configuration.Route.Firewall:
+    derived_from: sdl.nodes.Configuration.Route
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          existsRoute: "+ existsRoute('$this=>source_network{tosca_id}', '$this=>destination_network{tosca_id}','$this=>firewall=>host{tosca_id}')" 
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          existsRoute: "!include existsroute-linux.yaml" 
+
+  sdl.nodes.Configuration.DefaultRoute.Firewall:
+    derived_from: sdl.nodes.Configuration.DefaultRoute
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          existsRoute: "existsRoute('$this=>default_network{tosca_id}', N, '$this=>firewall=>host{tosca_id}') <= 
+          isConnected(X, '$this=>default_network{tosca_id}') & isRouter(X) & existsRoute('$this=>default_network{tosca_id}', N, X)" 
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          existsRoute: "!include existsroute-linux.yaml" 
+
+  sdl.nodes.Configuration.Route.Firewall.VyOS:
+    derived_from: sdl.nodes.Configuration.Route.Firewall
+    properties:
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          existsRoute: "!include existsroute-linux.yaml" 
+    requirements:
+      - firewall:
+          capability: sdl.capabilities.ConfigurationContainer.VyOS
+          node: sdl.nodes.Firewall.VyOS
+    interfaces:
+      Standard:
+        configure: 
+          implementation: 
+            primary: global-scripts/Configuration/vyos/configure-vyos-route.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+
+  sdl.nodes.Configuration.DefaultRoute.Firewall.VyOS:
+    derived_from: sdl.nodes.Configuration.DefaultRoute.Firewall
+    requirements:
+      - firewall:
+          capability: sdl.capabilities.ConfigurationContainer.VyOS
+          node: sdl.nodes.Firewall.VyOS
+
+  sdl.nodes.Configuration.Route.Firewall.UFW:
+    derived_from: sdl.nodes.Configuration.Route.Firewall
+    requirements:
+      - firewall:
+          capability: sdl.capabilities.ConfigurationContainer.Linux
+          node: sdl.nodes.Firewall.UFW
+    # interfaces:
+    #   Standard:
+    #     configure: 
+    #       implementation: 
+    #         primary: global-scripts/Configuration/ufw/configure-ufw-route.sh
+    #         dependencies:
+    #           - "ssh.user > { get_input: ssh_username }"
+    #           - "ssh.key_filename > { get_input: private_key_path }"
+    #           - "ssh.use_sudo > true"
+
+  sdl.nodes.Configuration.DefaultRoute.Firewall.UFW:
+    derived_from: sdl.nodes.Configuration.DefaultRoute.Firewall
+    properties:
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          existsRoute: "!include existsroute-linux.yaml" 
+    requirements:
+      - firewall:
+          capability: sdl.capabilities.ConfigurationContainer.Linux
+          node: sdl.nodes.Firewall.UFW
+
+  ## FIREWALL ##
+
+  sdl.nodes.Configuration.Firewall.Init:
+    derived_from: sdl.nodes.Configuration
+    properties:
+      masquerade_addresses:
+        type: list
+        entry_schema:
+         type: string
+      routes:
+        type: list
+        entry_schema:
+          type: sdl.datatypes.route
+
+  sdl.nodes.Configuration.Firewall.Init.Permissive.VyOS:
+    derived_from: sdl.nodes.Configuration.Firewall.Init
+    requirements:
+      - firewall:
+          capability: sdl.capabilities.ConfigurationContainer.VyOS
+          node: sdl.nodes.Firewall.VyOS
+    interfaces:
+      Standard:
+        configure: 
+          implementation: 
+            primary: global-scripts/Configuration/vyos/configure-vyos-permissive.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+
+  sdl.nodes.Configuration.Firewall.Init.Permissive.UFW:
+    derived_from: sdl.nodes.Configuration.Firewall.Init
+    requirements:
+      - firewall:
+          capability: sdl.capabilities.ConfigurationContainer.Linux
+          node: sdl.nodes.Firewall.UFW
+    interfaces:
+      Standard:
+        configure: 
+          implementation: 
+            primary: global-scripts/Configuration/ufw/configure-ufw-permissive.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+
+  ## HTTP ##
+
+  sdl.nodes.Configuration.HTTP.Linux.UserDir:
+    derived_from: sdl.nodes.Configuration
+    attributes:
+      user:
+        type: string
+      path:
+        type: string
+    capabilities:
+      artifact:
+        type: sdl.capabilities.ArtifactContainer
+      documentroot:
+        type: sdl.capabilities.HtdocsContainer
+    requirements:
+      - user:
+         capability: sdl.capabilities.PrivilegeProvider
+         relationship: sdl.relationships.GetsUsername
+         node: sdl.nodes.User.Linux
+
+  # Apache #
+
+  sdl.nodes.Configuration.HTTP.Linux.UserDir.Apache:
+    derived_from: sdl.nodes.Configuration.HTTP.Linux.UserDir
+    requirements:
+      - server:
+          capability: sdl.capabilities.ConfigurationContainer.HTTP
+          node: sdl.nodes.Software.Server.HTTP.Linux.Apache
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Configuration/linux/apacheuserdir-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+
+  sdl.nodes.Configuration.HTTP.Linux.Php.Apache:
+    derived_from: sdl.nodes.Configuration
+    requirements:
+      - server:
+          capability: sdl.capabilities.ConfigurationContainer.HTTP
+          node: sdl.nodes.Software.Server.HTTP.Linux.Apache
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Configuration/linux/apachephp-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
+  # DB #
+  
+  sdl.nodes.Configuration.DB:
+    derived_from: sdl.nodes.Configuration
+    properties:
+      dbname:
+        type: string
+        required: yes
+    capabilities:
+        db: 
+          type: sdl.capabilities.DBContainer
+
+  sdl.nodes.Configuration.DB.Linux.MySQL:
+    derived_from: sdl.nodes.Configuration.DB
+    attributes:
+      password:
+        type: string
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          knows: "knows(A, '$this[dbname]') <= knows(A, '$this=>server[password]') & hasAccount(A,H,U) & 
+          hostACL(H, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]')"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          knows: "!include knows-linuxmysql.yaml"
+    requirements:
+      - server:
+          capability: sdl.capabilities.ConfigurationContainer.DBMS
+          relationship: sdl.relationships.GetsPassword
+          node: sdl.nodes.Software.Server.DBMS.Linux.MySQL
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Configuration/linux/mysqldb-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+
+  # MYSQL #
+
+  sdl.nodes.Configuration.DBMS.Linux.MySQL.RootAllHosts:
+    derived_from: sdl.nodes.Configuration
+    attributes:
+      password:
+        type: string
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          listeningOn: "+ listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]')"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          listeningOn: "!include listeningon-linux.yaml"
+    requirements:
+      - server:
+          capability: sdl.capabilities.ConfigurationContainer.DBMS
+          relationship: sdl.relationships.GetsPassword
+          node: sdl.nodes.Software.Server.DBMS.Linux.MySQL
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Configuration/linux/mysqlrootallhosts-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+
+  # BIND #
+  sdl.nodes.Configuration.DNS.Linux.BIND.Zone:
+    derived_from: sdl.nodes.Configuration
+    attributes:
+      hostname:
+        type: string
+      address:
+        type: string
+    properties:
+      name:
+        type: string
+        required: true
+      forwarders:
+        type: list
+        entry_schema:
+         type: string
+      records:
+        type: list
+        entry_schema:
+         type: sdl.datatypes.Configuration.dnsrecord
+    requirements:
+      - server:
+          capability: sdl.capabilities.ConfigurationContainer.DNS
+          relationship: sdl.relationships.GetsHostnameIP
+          node: sdl.nodes.Software.Server.DNS.Linux.Bind   
+    interfaces:
+        Standard:
+          configure:
+            implementation:
+              primary: global-scripts/Configuration/linux/bindzone-configure.sh
+              dependencies:
+                - "ssh.user > { get_input: ssh_username }"
+                - "ssh.key_filename > { get_input: private_key_path }"
+                - "ssh.use_sudo > true"

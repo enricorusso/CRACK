@@ -1,0 +1,424 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+capability_types:
+  sdl.capabilities.SoftwareContainer:
+    derived_from: tosca.capabilities.Root
+
+  # HTTP
+  sdl.capabilities.HtdocsContainer:
+    derived_from: tosca.capabilities.Root
+
+  # DB
+  sdl.capabilities.DBContainer:
+    derived_from: tosca.capabilities.Root
+
+node_types:
+  sdl.nodes.Software:
+    attributes:
+      username:
+        type: string
+    derived_from: sdl.nodes.Root
+    capabilities:
+      vulnerability:
+        type: sdl.capabilities.VulnerabilityContainer
+    requirements:
+      - user:
+          capability: sdl.capabilities.PrivilegeProvider
+          relationship: sdl.relationships.GetsUsername
+          occurrences: [ 0, UNBOUNDED ]
+
+  # sdl.nodes.Software.Linux:
+  #   derived_from: sdl.nodes.Software
+  #   requirements:
+  #     - swcontainer:
+  #         capability: sdl.capabilities.SoftwareContainer
+  #         node: sdl.nodes.System.Linux
+  #     - user:
+  #         capability: sdl.capabilities.PrivilegeProvider
+  #         occurrences: [ 0, UNBOUNDED ]
+
+  sdl.nodes.Software.Server:
+    derived_from: sdl.nodes.Software
+    properties:
+      port: 
+        type: integer
+        required: true
+      protocol:
+        type: string
+        required: true
+    capabilities:
+      vulnerability:
+        type: sdl.capabilities.VulnerabilityContainer
+
+  # SSH #
+
+  sdl.nodes.Software.Server.SSH:
+    derived_from: sdl.nodes.Software.Server
+    properties:
+      port: 
+        type: integer
+        default: 22
+        required: true
+      protocol:
+         type: string
+         default: tcp
+         required: true
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          listeningOn: "+ listeningOn('$this=>swcontainer=>host{tosca_id}', '$this[protocol]', '$this[port]')"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          listeningOn: "!include listeningon-linux.yaml"
+
+
+  sdl.nodes.Software.Server.SSH.Linux.OpenSSH:
+    derived_from: sdl.nodes.Software.Server.SSH
+    properties:
+      PermitRootLogin:
+        type: string
+        default: "no"
+        constraints:
+          - valid_values: [ "yes", prohibit-password, without-password, forced-commands-only, "no" ]
+      PasswordAuthentication:
+        type: string
+        default: "no"
+        constraints:
+          - valid_values: [ "yes", "no" ]
+    requirements:
+      - swcontainer:
+          capability: sdl.capabilities.SoftwareContainer
+          node: sdl.nodes.System.Linux
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Software/linux/openssh-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+ 
+  # HTTP #
+
+  sdl.nodes.Software.Server.HTTP:
+    derived_from: sdl.nodes.Software.Server
+    attributes:
+      path:
+        type: string
+    properties:
+      port: 
+        type: integer
+        default: 80
+        required: true
+      protocol:
+         type: string
+         default: tcp
+         required: true
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          listeningOn: "+ listeningOn('$this=>swcontainer=>host{tosca_id}', '$this[protocol]', '$this[port]')"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          listeningOn: "!include listeningon-linux.yaml"
+    capabilities:
+      documentroot:
+        type: sdl.capabilities.HtdocsContainer
+      configuration:
+        type: sdl.capabilities.ConfigurationContainer.HTTP
+      artifact:
+        type: sdl.capabilities.ArtifactContainer
+
+  sdl.nodes.Software.Server.HTTP.Linux:
+    derived_from: sdl.nodes.Software.Server.HTTP
+
+  sdl.nodes.Software.Server.HTTP.Linux.Apache:
+    derived_from: sdl.nodes.Software.Server.HTTP.Linux
+    requirements:
+      - swcontainer:
+          capability: sdl.capabilities.SoftwareContainer
+          node: sdl.nodes.System.Linux
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Software/linux/apachehttp-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
+  sdl.nodes.Software.Server.HTTP.Linux.Nginx:
+    derived_from: sdl.nodes.Software.Server.HTTP.Linux
+    requirements:
+      - swcontainer:
+          capability: sdl.capabilities.SoftwareContainer
+          node: sdl.nodes.System.Linux
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Software/linux/nginx-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
+  # DBMS #
+
+  sdl.nodes.Software.Server.DBMS:
+    derived_from: sdl.nodes.Software.Server
+
+  # MySQL #
+
+  sdl.nodes.Software.Server.DBMS.Linux.MySQL:
+    derived_from: sdl.nodes.Software.Server.DBMS
+    properties:
+      port: 
+        type: integer
+        default: 3306
+        required: true
+      protocol:
+        type: string
+        default: tcp
+        required: true
+      password:
+        type: string
+        required: true
+      dbtype:
+        type: string
+        default: mysql 
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: {}
+    requirements:
+      - swcontainer:
+          capability: sdl.capabilities.SoftwareContainer
+          node: sdl.nodes.System.Linux
+    capabilities:
+      configuration:
+        type: sdl.capabilities.ConfigurationContainer.DBMS
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Software/linux/mysql-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+  
+  # CMS #
+  sdl.nodes.Software.Server.CMS:
+    derived_from: sdl.nodes.Software
+    attributes:
+      path: 
+        type: string
+      dbtype: 
+        type: string
+    properties:
+      db_username:
+        type: string
+        default: root
+        required: true
+      db_password:
+        type: string
+        required: true
+      # TODO: It should be detected from the dbms relationship but we are in a multihoming environment. 
+      db_host:
+        type: string
+        required: true
+      db_name:
+        type: string
+        required: true
+      url:
+        type: string
+      title:
+        type: string
+      admin_user:
+        type: string
+      admin_password:
+        type: string
+      admin_email:
+        type: string
+
+  # wordpress #
+  sdl.nodes.Software.Server.CMS.Linux.Wordpress:
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          knows1: "knows(A, '$this[db_password]') <= hasUser(U,'$this=>container=>swcontainer=>host{tosca_id}',P,'admin') & 
+          hasAccount(A,'$this=>container=>swcontainer=>host{tosca_id}',U)"
+          knows2: "knows(A, '$this[db_password]') <= hasUser('$this=>container=>user{tosca_id}','$this=>container=>swcontainer=>host{tosca_id}',P, R) & 
+          hasAccount(A,'$this=>container=>swcontainer=>host{tosca_id}', '$this=>container=>user{tosca_id}')"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          knows1: "!include knows-linuxwordpress.yaml"
+          knows2: "!include knows-linuxwordpress.yaml"
+    derived_from: sdl.nodes.Software.Server.CMS
+    requirements:
+      - db:
+          capability: sdl.capabilities.DBContainer
+          # relationship: tosca.relationships.DependsOn
+          node: sdl.nodes.Software.Server.DBMS.Linux.MySQL
+          # occurrences: [ 0, UNBOUNDED ]
+      - container:
+          capability: sdl.capabilities.HtdocsContainer
+          relationship: sdl.relationships.GetsPath
+          node: sdl.nodes.Software.Server.HTTP.Linux
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Software/linux/wordpress-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
+  # mezzanine #
+  sdl.nodes.Software.Server.CMS.Linux.Mezzanine:
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          knows1: "knows(A, '$this[db_password]') <= hasUser(U,'$this=>container=>swcontainer=>host{tosca_id}',P,'admin') & 
+          hasAccount(A,'$this=>container=>swcontainer=>host{tosca_id}',U)"
+          knows2: "knows(A, '$this[db_password]') <= hasUser('$this=>user{tosca_id}','$this=>container=>swcontainer=>host{tosca_id}',P, R) & 
+          hasAccount(A,'$this=>container=>swcontainer=>host{tosca_id}', '$this=>user{tosca_id}')"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          knows1: "!include knows-linuxmezzanine.yaml"
+          knows2: "!include knows-linuxmezzanine.yaml"
+    derived_from: sdl.nodes.Software.Server.CMS
+    requirements:
+      - db:
+          capability: sdl.capabilities.DBContainer
+          # relationship: tosca.relationships.DependsOn
+          node: sdl.nodes.Software.Server.DBMS.Linux.MySQL
+          occurrences: [ 0, UNBOUNDED ]
+      - container:
+          capability: sdl.capabilities.HtdocsContainer
+          #relationship: sdl.relationships.GetsPath
+          node: sdl.nodes.Software.Server.HTTP.Linux.Nginx
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Software/linux/mezzanine-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
+  # DNS #
+
+  sdl.nodes.Software.Server.DNS.Linux.Bind:
+    derived_from: sdl.nodes.Software.Server
+    attributes:
+      hostname:
+        type: string
+    properties:
+      address:
+        type: string
+        required: true
+      port: 
+        type: integer
+        default: 53
+        required: true
+      protocol:
+        type: string
+        default: udp
+        required: true
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          listeningOn: "+ listeningOn('$this=>swcontainer=>host{tosca_id}', '$this[protocol]', '$this[port]')"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          listeningOn: "!include listeningon-linux.yaml"
+    requirements:
+      - swcontainer:
+          capability: sdl.capabilities.SoftwareContainer
+          relationship: sdl.relationships.GetsHostname
+          node: sdl.nodes.System.Linux
+    capabilities:
+      configuration:
+        type: sdl.capabilities.ConfigurationContainer.DNS
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Software/linux/bind-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }

@@ -1,0 +1,8 @@
+[Unit]
+After=network.target
+
+[Service]
+User=$user
+Group=$group
+WorkingDirectory=/usr/local/mezzanine_env/blog
+ExecStart=/usr/local/mezzanine_env/bin/gunicorn --access-logfile - --workers 3 --bind unix:/usr/local/mezzanine_env/blog/blog.sock blog.wsgi:application

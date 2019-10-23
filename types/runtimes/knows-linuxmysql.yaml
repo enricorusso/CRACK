@@ -1,0 +1,28 @@
+execute: remote
+script: |
+  #!/bin/bash
+
+  set -e
+
+  function getParam() {
+   if [ "$1" != "null" ]; then
+       echo $1 | cut -d\" -f 2
+   else
+       echo ""
+   fi
+  }
+
+  principal=$(getParam $1)
+  data=$(getParam $2)
+  knowledge=$(echo ${3//[\[\]\"]} | tr ',' ' ')
+  
+  ret=""
+  for p in $knowledge
+  do
+     if o=$(mysql -u root --password="$p" -e "show tables;" $data 2>&1>/dev/null); then
+        ret="[ \"$data\" ]"
+        break
+     fi
+  done
+
+  echo -n "{\"principal\":\"$principal\", \"data\": $ret }"

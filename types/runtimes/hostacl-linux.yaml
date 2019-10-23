@@ -1,0 +1,38 @@
+execute: remote
+script: |
+    #!/bin/bash
+
+    function getParam() {
+     if [ "$1" != "null" ]; then
+         echo $1 | cut -d\" -f 2
+     else
+         echo ""
+     fi
+    }
+
+    srchost=$(getParam $1)
+    dsthost=$(echo ${2//[\[\]\"]} | tr ',' ' ')
+
+    protocol=$(getParam $3)
+    port=$(getParam $4)
+
+    echo -n "{\"srchost\":\"$srchost\", \"dsthost\":"
+
+    echo -n "["
+
+    ret=$(for ip in $dsthost
+    do
+      ipaddr=$(echo $ip | cut -d/ -f 1)
+      if [ "$protocol" == "$udp" ]; then
+          o=$(nc -u -z -w 2 -v $ipaddr $port)
+      else
+          o=$(nc -z -w 2 -v $ipaddr $port 2>&1>/dev/null)
+      fi
+      if [ "$?" == "0" ]; then
+          r="$r \"$ip\","
+      fi
+    done
+    echo $r)
+    ret=$(echo $ret | rev | cut -c 2- | rev)
+    echo -n $ret
+    echo "], \"protocol\":\"$protocol\", \"port\":\"$port\"}"

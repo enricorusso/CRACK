@@ -1,0 +1,49 @@
+execute: remote
+script: |
+  #!/bin/bash
+
+  set -e
+
+  #!/bin/bash
+
+  function getParam() {
+   if [ "$1" != "null" ]; then
+       echo $1 | cut -d\" -f 2
+   else
+       echo ""
+   fi
+  }
+
+  username=$(getParam $1)
+  host=$(getParam $2)
+  password=$(getParam $3)
+  role=$(getParam $4)
+
+  cpasswd=$(grep $username /etc/shadow  | cut -d: -f 2)
+
+  if [ "$cpasswd" != "" ]; then
+      if [ "$cpasswd" == "*" ]; then
+          if [ "$password" != "" ]; then
+              username=""
+          fi
+      else
+          alg=$(echo $cpasswd | cut -d$ -f 2)
+          salt=$(echo $cpasswd | cut -d$ -f 3)
+            
+          tpasswd=$(python <(echo "import crypt; print crypt.crypt('$password','\$$alg\$$salt\$')"))
+            
+          if [ "$tpasswd" != "$cpasswd" ]; then
+              username=""
+          fi
+      fi
+  else
+      username=""
+  fi
+  
+  trole=$(id -Gn $username 2>/dev/null | grep -q -E "adm|sudo|root" && echo "admin" || echo "user")
+
+  if [ "$trole" != "$role" ]; then
+      role=""
+  fi
+
+  echo -n "{\"username\":\"$username\", \"host\":\"$host\", \"password\":\"$password\", \"role\":\"$role\""}
