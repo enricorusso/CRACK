@@ -86,6 +86,29 @@ topology_template:
 
         sed -i 's/archive./it.archive./g' /etc/apt/sources.list
 
+    alpine_init:
+      type: string
+      default: |
+        #!/bin/bash
+
+        SDLUSR="sdlmgmt"
+
+        adduser -h /home/$SDLUSR -s /bin/bash -g "User for SDL orchestration" -D $SDLUSR
+        passwd -u sdlmgmt
+        mkdir /home/$SDLUSR/.ssh
+        cp /root/.ssh/authorized_keys /home/$SDLUSR/.ssh
+        chown -R $SDLUSR.$SDLUSR /home/$SDLUSR/.ssh
+
+        echo "$SDLUSR ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/99-sdl-users
+
+        sed -i 's/AllowTcpForwarding no/AllowTcpForwarding yes/g' /etc/ssh/sshd_config
+
+        service sshd restart
+
+        # TODO: put python in the master image
+        export http_proxy="http://192.168.168.1:80"
+        apk add --update python
+
     vyos118_init:
       type: string
       default: |

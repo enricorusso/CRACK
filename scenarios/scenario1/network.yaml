@@ -1,0 +1,148 @@
+topology_template:
+  node_templates: 
+    ### routers ####
+    
+    gateway:
+      type: aria.openstack.nodes.Router
+      properties:
+        external_network: { get_input: external_network_name }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: gateway
+        openstack_config: { get_input: openstack_config }
+
+    ## networks ##
+
+    # EXTNET
+    Extnet:
+      type: aria.openstack.nodes.Network
+      properties:
+        resource_id: extnet
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+
+    Extnet_subnet:
+      type: aria.openstack.nodes.Subnet
+      properties:
+        resource_id: extnet_subnet
+        subnet:
+          cidr: { get_input: net_extnet_cidr }
+          enable_dhcp: true
+  #         gateway_ip: 198.168.254.1
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+      requirements:
+          - router: gateway
+          - network: Extnet
+
+    # SIMINT1
+    Simint1:
+      type: aria.openstack.nodes.Network
+      properties:
+        resource_id: simint1
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+
+    Simint1_subnet:
+      type: aria.openstack.nodes.Subnet
+      properties:
+        resource_id: simint1_subnet
+        subnet:
+          cidr: { get_input: net_simint1_cidr }
+          enable_dhcp: false
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+      requirements:
+          - network: Simint1
+
+    # Outside
+    Outside:
+      type: aria.openstack.nodes.Network
+      properties:
+        resource_id: outside
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+
+    Outside_subnet:
+      type: aria.openstack.nodes.Subnet
+      properties:
+        resource_id: outside_subnet
+        subnet:
+          cidr: { get_input: net_outside_cidr }
+          enable_dhcp: false
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+      requirements:
+          - network: Outside
+
+    # DMZ
+    DMZ:
+      type: aria.openstack.nodes.Network
+      properties:
+        resource_id: DMZ
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+
+    DMZ_subnet:
+      type: aria.openstack.nodes.Subnet
+      properties:
+        resource_id: DMZ_subnet
+        subnet:
+          cidr: { get_input: net_dmz_cidr }
+          enable_dhcp: false
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+      requirements:
+          - network: DMZ
+
+    # Server
+    Server:
+      type: aria.openstack.nodes.Network
+      properties:
+        resource_id: server
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+
+    Server_subnet:
+      type: aria.openstack.nodes.Subnet
+      properties:
+        resource_id: server_subnet
+        subnet:
+          cidr: { get_input: net_server_cidr }
+          enable_dhcp: false
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+      requirements:
+          - network: Server
+
+    # IoT
+    IoT:
+      type: aria.openstack.nodes.Network
+      properties:
+        resource_id: IoT
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+
+    IoT_subnet:
+      type: aria.openstack.nodes.Subnet
+      properties:
+        resource_id: IoT_subnet
+        subnet:
+          cidr: { get_input: net_iot_cidr }
+          enable_dhcp: false
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+      requirements:
+          - network: IoT

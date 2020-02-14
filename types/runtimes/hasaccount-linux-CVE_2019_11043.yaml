@@ -1,0 +1,29 @@
+execute: remote
+script: |
+  #!/bin/bash
+
+  function getParam() {
+   if [ "$1" != "null" ]; then
+       echo $1 | cut -d\" -f 2
+   else
+       echo ""
+   fi
+  }
+
+  export http_proxy=""
+  export https_proxy=""
+
+  principal=$(getParam $1)
+  host=$(getParam $2)
+  username=$(getParam $3)
+
+  cd /tmp
+  wget --quiet https://raw.githubusercontent.com/theMiddleBlue/CVE-2019-11043/master/exploit.py
+
+  test=`python exploit.py --url http://127.0.0.1/test.php --skip-rce | grep vulnerable`
+
+  if [ "$?" != 0 ]; then
+     username=""
+  fi
+
+  echo -n "{\"principal\":\"$principal\", \"username\":\"$username\", \"host\":\"$host\""}

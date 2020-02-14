@@ -1,9 +1,9 @@
 topology_template:
   node_templates:
-    sdl-mgmt:
+    management:
       type: aria.openstack.nodes.Network
       properties:
-        resource_id: sdl-mgmt
+        resource_id: management
         use_external_resource: true
         create_if_missing: false
         openstack_config: { get_input: openstack_config }
@@ -16,4 +16,4 @@ topology_template:
         create_if_missing: false
         openstack_config: { get_input: openstack_config }
       requirements:
-        - network: sdl-mgmt
+        - network: management

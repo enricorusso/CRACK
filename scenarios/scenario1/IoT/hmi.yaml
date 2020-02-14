@@ -1,0 +1,42 @@
+topology_template:
+   node_templates:    
+
+    HMI_IoT_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: HMI_Server_port
+        fixed_ip: { get_input: hmi_iot_ip }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+      #  - security_group: allowall
+        - subnet: IoT_subnet
+        - network: IoT
+
+    hmi:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: alpine-image }
+        flavor: { get_input: alpine-flavor }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: hmi
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+        server:
+         userdata: { get_input: alpine_init }     
+      requirements:
+        - key_pair: keypair
+        - port: HMI_IoT_port
+
+    ### SDL ###
+
+    hmi_system:
+      type: sdl.nodes.System.Linux
+      properties:
+        hostname: { get_input: hmi_hostname }
+        domain: { get_input: hmi_domain }
+        dns: { get_input: hmi_dns }
+      requirements:
+        - host: hmi

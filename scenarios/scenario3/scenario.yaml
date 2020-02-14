@@ -1,0 +1,94 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+imports:
+ - config.yaml
+ - network.yaml
+ - firewall.yaml
+ - Internet/provider.yaml
+ - Internet/root-ns.yaml
+ - Internet/client.yaml
+ - DMZ/collab.yaml
+ - DMZ/waf.yaml
+ - DMZ/www.yaml
+ - DMZ/ns.yaml
+ - DMZ/ftp.yaml
+ - Server/db.yaml
+ - Server/siem.yaml
+ - Server/ids.yaml
+ - Server/intranet.yaml
+ - Server/dc.yaml
+ - Server/nas.yaml
+ - Server/videoserver.yaml
+ - Server/cam1.yaml
+ - Server/cam2.yaml
+ - Server/cam3.yaml
+ - Server/cam4.yaml
+ - Server/cam5.yaml
+ - IoT/cam6.yaml
+ - IoT/elev.yaml
+ - IoT/climate.yaml
+ - IoT/hmi.yaml
+ - IoT/alarm.yaml
+ - aria-1.0
+ - ../types/openstack-plugin.yaml
+ - ../types/openstack-mgmt.yaml
+ - ../types/sdl.yaml
+
+topology_template:    
+  ## workflow for creating model
+  policies:
+    verify:
+      type: VerifyWorkflow
+      properties:
+        output_directory: scenarios/output/scenario3/
+    test:
+      type: TestWorkflow
+      properties:
+        output_directory: scenarios/output/scenario3/
+        username: sdlmgmt
+        key_path: ~/.ssh/ex1-sdl
+        runtime_path: ~/git/SDL/types/runtimes
+        proxy_ip: 192.168.168.1
+        proxy_port: 80
+    creategraph:
+      type: GraphWorkflow
+
+  node_templates:    
+    keypair:
+      type: aria.openstack.nodes.KeyPair
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: { get_input: private_key_name }
+        private_key_path: { get_input: private_key_path }
+        openstack_config: { get_input: openstack_config }
+
+    ### SDL ###
+
+    eve:
+      type: sdl.nodes.Principal
+      properties:
+        name: eve
+      requirements:
+        - knowledge: 
+            node: client_user1
+            relationship: sdl.relationships.Knowledge.GetsCredentials
+
+    # goal1:
+    #   type: sdl.nodes.Goal.CanReach
+    #   requirements:
+    #     - system: client_system
+    #     - server: www_ssh
+
+    # goal1:
+    #   type: sdl.nodes.Goal.GetPrivilege
+    #   requirements:
+    #     - principal: eve
+    #     - privilege: www_root
+
+    goal1:
+      type: sdl.nodes.Goal.Knows
+      properties:
+        knowledge: DB_confidential
+      requirements:
+        - principal: eve

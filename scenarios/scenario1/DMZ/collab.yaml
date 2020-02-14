@@ -1,0 +1,82 @@
+topology_template:
+  node_templates:    
+    www_collab_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: collab_dmz_ip
+        fixed_ip: { get_input: openstack_config }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - subnet: DMZ_subnet
+        - network: DMZ
+        
+    collab:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: ubuntu1604-image }
+        flavor: { get_input: flavor }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: collab
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+        server:
+          userdata: { get_input: ubuntu1604_init }     
+      requirements:
+        - key_pair: keypair
+        - port: www_collab_port
+
+    ### SDL ###
+
+    collab_system:
+      type: sdl.nodes.System.Linux
+      properties:
+        hostname: { get_input: collab_hostname }
+        domain: { get_input: collab_domain }
+        dns: { get_input: collab_dns }
+      requirements:
+        - host: collab
+      #  - dependency: Firewall_InitPermissive
+
+    collab_sysuser1:
+      type: sdl.nodes.User.Linux
+      properties:
+        username: www-data
+        role: user
+      requirements:
+        - system: collab_system
+
+    collab_root:
+      type: sdl.nodes.User.Linux
+      properties:
+        username: root
+        role: admin
+      requirements:
+        - system: collab_system
+
+    collab_http:
+        type: sdl.nodes.Software.Server.HTTP.Linux.Nginx
+        requirements:
+          - swcontainer: collab_system
+          - user: collab_sysuser1
+
+    collab_php:
+        type: sdl.nodes.Configuration.HTTP.Linux.Php.Nginx
+        requirements:
+          - server: collab_http
+
+    collab_nextcloud:
+        type: sdl.nodes.Software.Server.NextCloud
+        properties:
+          db_username: root
+          db_password: { get_input: db_admin_pass }
+          db_host: { get_input: db_server_ip }
+          db_name: { get_input: collab_dbname }
+          admin_user: { get_input: collab_adminuser }
+          admin_password: { get_input: collab_adminpass }
+        requirements:
+          - container: collab_http
+#          - db: db_collabdb
+#          - dependency: db_config

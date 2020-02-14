@@ -303,7 +303,7 @@ node_types:
           capability: sdl.capabilities.DBContainer
           # relationship: tosca.relationships.DependsOn
           node: sdl.nodes.Software.Server.DBMS.Linux.MySQL
-          # occurrences: [ 0, UNBOUNDED ]
+          occurrences: [ 0, UNBOUNDED ]
       - container:
           capability: sdl.capabilities.HtdocsContainer
           relationship: sdl.relationships.GetsPath
@@ -368,6 +368,55 @@ node_types:
               type: string
               default: { get_input: proxy_url }
 
+  # nextcloud #
+  sdl.nodes.Software.Server.NextCloud:
+    derived_from: sdl.nodes.Software
+    attributes:
+      path: 
+        type: string
+    properties:
+      db_username:
+        type: string
+        default: root
+        required: true
+      db_password:
+        type: string
+        required: true
+      # TODO: It should be detected from the dbms relationship but we are in a multihoming environment. 
+      db_host:
+        type: string
+        required: true
+      db_name:
+        type: string
+        required: true
+      admin_user:
+        type: string
+      admin_password:
+        type: string
+    requirements:
+      - db:
+          capability: sdl.capabilities.DBContainer
+          # relationship: tosca.relationships.DependsOn
+          node: sdl.nodes.Software.Server.DBMS.Linux.MySQL
+          occurrences: [ 0, UNBOUNDED ]
+      - container:
+          capability: sdl.capabilities.HtdocsContainer
+          relationship: sdl.relationships.GetsPath
+          node: sdl.nodes.Software.Server.HTTP.Linux
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Software/linux/nextcloud-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
   # DNS #
 
   sdl.nodes.Software.Server.DNS.Linux.Bind:
@@ -414,6 +463,51 @@ node_types:
         configure:
           implementation:
             primary: global-scripts/Software/linux/bind-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
+  # webmin #
+
+  sdl.nodes.Software.Server.Linux.Webmin:
+    derived_from: sdl.nodes.Software.Server
+    properties:
+      port: 
+        type: integer
+        default: 10000
+        required: true
+      protocol:
+        type: string
+        default: http
+        required: true
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          listeningOn: "+ listeningOn('$this=>swcontainer=>host{tosca_id}', '$this[protocol]', '$this[port]')"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          listeningOn: "!include listeningon-linux.yaml"
+    requirements:
+      - swcontainer:
+          capability: sdl.capabilities.SoftwareContainer
+          node: sdl.nodes.System.Linux
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Software/linux/webmin-configure.sh
             dependencies:
               - "ssh.user > { get_input: ssh_username }"
               - "ssh.key_filename > { get_input: private_key_path }"

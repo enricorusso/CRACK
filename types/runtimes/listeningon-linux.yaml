@@ -24,7 +24,9 @@ script: |
          pr=$(echo $l | cut -d' ' -f 1)
          po=$(echo $l | cut -d: -f 2)
     fi
-    (echo $po $pr | grep "$port $protocol") && break
+    ### TODO check protocol different from tcp/udp
+    # (echo $po $pr | grep "$port $protocol") && break
+    (echo $po | grep "$port") && break
    done)
 
    if [ "$res" == "" ]; then

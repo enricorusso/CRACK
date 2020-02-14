@@ -1,0 +1,106 @@
+topology_template:
+  node_templates:    
+    www_DMZ_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: www_DMZ_port
+        fixed_ip: 198.51.100.5
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - subnet: DMZ_subnet
+        - network: DMZ
+        
+    www:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: ubuntu1604-image }
+        flavor: { get_input: flavor }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: www
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+        server:
+          userdata: { get_input: ubuntu1604_init }     
+      requirements:
+        - key_pair: keypair
+        - port: www_DMZ_port
+
+    ### SDL ###
+
+    www_system:
+      type: sdl.nodes.System.Linux
+      properties:
+        hostname: { get_input: www_hostname }
+        domain: { get_input: www_domain }
+        dns: { get_input: www_dns }
+      requirements:
+        - host: www
+        - dependency: Firewall_InitPermissive
+
+    www_user1:
+      type: sdl.nodes.User.Linux
+      properties:
+        username: alice
+        password: 9JmDGEr4
+        role: user
+      requirements:
+        - system: www_system
+
+    www_sysuser1:
+      type: sdl.nodes.User.Linux
+      properties:
+        username: www-data
+        role: user
+      requirements:
+        - system: www_system
+
+    www_root:
+      type: sdl.nodes.User.Linux
+      properties:
+        username: root
+        role: admin
+      requirements:
+        - system: www_system
+
+    www_ssh:
+        type: sdl.nodes.Software.Server.SSH.Linux.OpenSSH
+        properties:
+          PasswordAuthentication: "yes"
+        requirements:
+          - swcontainer: www_system
+
+    www_http:
+        type: sdl.nodes.Software.Server.HTTP.Linux.Apache
+        requirements:
+          - swcontainer: www_system
+          - user: www_sysuser1
+
+    www_php:
+        type: sdl.nodes.Configuration.HTTP.Linux.Php.Apache
+        requirements:
+          - server: www_http
+
+    www_cms:
+        type: sdl.nodes.Software.Server.CMS.Linux.Wordpress
+        properties:
+          db_username: root
+          db_password: { get_input: db_admin_pass }
+          db_host: { get_input: db_server_ip }
+          db_name: { get_input: www_cms_dbname }
+          url:  { concat: [ get_input: www_hostname,'.', get_input: www_domain ] }
+          title: { get_input: www_cms_title }
+          admin_user: { get_input: www_cms_login }
+          admin_password: { get_input: www_cms_password }
+          admin_email: { concat: [ 'webmaster@', get_input: www_domain ] }
+        requirements:
+          - container: www_http
+          - db: db_cmsdb
+          - dependency: db_config
+
+    www_vuln1:
+      type: sdl.nodes.Vulnerability.Server.HTTP.Linux.Apache.OpenProxy
+      requirements:
+        - server: www_http

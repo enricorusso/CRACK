@@ -1,0 +1,94 @@
+topology_template:
+   node_templates:    
+
+    DB_Server_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: DB_Server_port
+        fixed_ip: { get_input: db_server_ip }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+      #  - security_group: allowall
+        - subnet: Server_subnet
+        - network: Server
+
+    db:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: ubuntu1604-image }
+        flavor: { get_input: flavor }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: db
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+        server:
+          userdata: { get_input: ubuntu1604_init }     
+      requirements:
+        - key_pair: keypair
+        - port: DB_Server_port
+
+    ### SDL ###
+
+    db_system:
+      type: sdl.nodes.System.Linux
+      properties:
+        hostname: { get_input: db_hostname }
+        domain: { get_input: db_domain }
+        dns: { get_input: db_dns }
+      requirements:
+        - host: db
+
+    db_dbms:
+      type: sdl.nodes.Software.Server.DBMS.Linux.MySQL
+      properties:
+        password: { get_input: db_admin_pass } 
+      requirements:
+        - swcontainer: db_system
+
+    db_cmsdb:
+      type: sdl.nodes.Configuration.DB.Linux.MySQL
+      properties:
+        dbname: { get_input: www_cms_dbname } 
+      requirements:
+        - server: db_dbms
+
+    db_collabdb:
+      type: sdl.nodes.Configuration.DB.Linux.MySQL
+      properties:
+        dbname: { get_input: collab_dbname } 
+      requirements:
+        - server: db_dbms
+
+    db_confidentialdb:
+      type: sdl.nodes.Configuration.DB.Linux.MySQL
+      properties:
+        dbname: DB_confidential 
+      requirements:
+        - server: db_dbms
+
+    db_config:
+      type: sdl.nodes.Configuration.DBMS.Linux.MySQL.RootAllHosts
+      requirements:
+        - server: db_dbms
+
+    db_root:
+      type: sdl.nodes.User.Linux
+      properties:
+        username: root
+        role: admin
+      requirements:
+        - system: db_system
+
+    db_webmin:
+      type: sdl.nodes.Software.Server.Linux.Webmin
+      requirements:
+        - swcontainer: db_system
+        - user: db_root
+
+    db_vuln1:
+      type: sdl.nodes.Vulnerability.Linux.Webmin.CVE_2019_15107
+      requirements:
+        - server: db_webmin

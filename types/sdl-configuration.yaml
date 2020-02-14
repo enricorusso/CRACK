@@ -362,6 +362,28 @@ node_types:
               type: string
               default: { get_input: proxy_url }
 
+  # Nginx #
+
+  sdl.nodes.Configuration.HTTP.Linux.Php.Nginx:
+    derived_from: sdl.nodes.Configuration
+    requirements:
+      - server:
+          capability: sdl.capabilities.ConfigurationContainer.HTTP
+          node: sdl.nodes.Software.Server.HTTP.Linux.Nginx
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Configuration/linux/nginxphp-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
   # DB #
   
   sdl.nodes.Configuration.DB:
@@ -386,15 +408,17 @@ node_types:
           type: string
         required: no
         default: 
-          knows: "knows(A, '$this[dbname]') <= knows(A, '$this=>server[password]') & hasAccount(A,H,U) & 
+          knows1: "knows(A, '$this[dbname]') <= knows(A, '$this=>server[password]') & hasAccount(A,H,U) & 
           hostACL(H, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]')"
+          knows2: "knows(A, '$this[dbname]') <= hasUser(U,'$this=>server=>swcontainer=>host{tosca_id}',P,'admin') & 
+          hasAccount(A,'$this=>server=>swcontainer=>host{tosca_id}',U)"
       runtime:
         type: map
         entry_schema:
           type: string
         required: no
         default: 
-          knows: "!include knows-linuxmysql.yaml"
+          knows1: "!include knows-linuxmysql.yaml"
     requirements:
       - server:
           capability: sdl.capabilities.ConfigurationContainer.DBMS

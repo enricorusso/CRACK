@@ -12,12 +12,12 @@ imports:
   - sdl-init.yaml
 
 policy_types:
-  ValidateWorkflow:
+  VerifyWorkflow:
     derived_from: aria.Workflow
     properties:
       implementation:
         type: string
-        default: aria.orchestrator.workflows.sdl.validate
+        default: aria.orchestrator.workflows.sdl.verify
       output_directory:
         type: string
         default: /tmp

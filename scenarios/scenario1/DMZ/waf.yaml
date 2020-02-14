@@ -1,0 +1,63 @@
+topology_template:
+  node_templates:    
+    waf_DMZ_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: waf_DMZ_port
+        fixed_ip: { get_input: waf_dmz_ip }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - subnet: DMZ_subnet
+        - network: DMZ
+        
+    waf:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: ubuntu1604-image }
+        flavor: ds1G
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: waf
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+        server:
+          userdata: { get_input: ubuntu1604_init }     
+      requirements:
+        - key_pair: keypair
+        - port: waf_DMZ_port
+
+    ### SDL ###
+
+    waf_system:
+      type: sdl.nodes.System.Linux
+      properties:
+        hostname: { get_input: waf_hostname }
+        domain: { get_input: waf_domain }
+        dns: { get_input: waf_dns }
+      requirements:
+        - host: waf
+      #  - dependency: Firewall_InitPermissive
+
+    waf_sysuser1:
+      type: sdl.nodes.User.Linux
+      properties:
+        username: www-data
+        role: user
+      requirements:
+        - system: waf_system
+
+    waf_root:
+      type: sdl.nodes.User.Linux
+      properties:
+        username: root
+        role: admin
+      requirements:
+        - system: waf_system
+
+    waf_http:
+        type: sdl.nodes.Software.Server.HTTP.Linux.Apache
+        requirements:
+          - swcontainer: waf_system
+          - user: waf_sysuser1

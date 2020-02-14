@@ -10,14 +10,19 @@ node_types:
           type: string
         required: no
         default: 
-          existsRoute: existsRoute(N,M,X) <= isConnected(X,N) & isConnected(X,M) & isRouter(X)
-          hostACL1: hostACL(H,K,P,Q) <= listeningOn(K,P,Q) & isConnected(K,N) & isConnected(H,M) & isConnected(S,M) & isRouter(S) & existsRoute(T,N,S)
-          hostACL2: hostACL(H,K,P,Q) <= listeningOn(K,P,Q) & isConnected(H,N) & isConnected(K,N)
-          hasAccount: hasAccount(A,H,U) <= hasUser(U,H,P,R) & knows(A,U) & knows(A,P)
+          #existsRoute1: existsRoute(N,M,X) <= isConnected(X,N) & isConnected(X,M) & isRouter(X)
+          #existsRoute2: existsRoute(N,M,X) <= isConnected(X,N) & isConnected(X,R) & isRouter(X) & existsRoute(R,M,Y)
+          #hostACL1: hostACL(H,K,P,Q) <= listeningOn(K,P,Q) & isConnected(K,N) & isConnected(H,M) & isConnected(S,M) & isRouter(S) & existsRoute(M,N,S)
+          #hostACL2: hostACL(H,K,P,Q) <= listeningOn(K,P,Q) & isConnected(H,N) & isConnected(K,N)
+          #hasAccount: hasAccount(A,H,U) <= hasUser(U,H,P,R) & knows(A,U) & knows(A,P)
           #listeningOn: listeningOn(X,P,Q) <= appliesNAT(X,R,H,Q,P)
           #hostACL3: hostACL(H,K,P,Q) <= hostACL(H,X,P,R) & hostACL(X,K,P,Q) & appliesNAT(X,Q,K,R,P)
           #bug1: "+ appliesNAT(0, 'a', 1, 'b', 1, 'c')"
           #bug2: "- appliesNAT(0, 'a', 1, 'b', 1, 'c')"
+          existsRoute: existsRoute(N,M,X) <= isConnected(X,N) & isConnected(X,M) & isRouter(X)
+          hostACL1: hostACL(H,K,P,Q) <= listeningOn(K,P,Q) & isConnected(K,N) & isConnected(H,M) & isConnected(S,M) & isRouter(S) & existsRoute(T,N,S)
+          hostACL2: hostACL(H,K,P,Q) <= listeningOn(K,P,Q) & isConnected(H,N) & isConnected(K,N)
+          hasAccount: hasAccount(A,H,U) <= hasUser(U,H,P,R) & knows(A,U) & knows(A,P)
       runtime:
         type: map
         entry_schema:

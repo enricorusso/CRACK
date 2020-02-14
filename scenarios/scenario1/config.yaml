@@ -1,0 +1,700 @@
+topology_template:
+  inputs:
+    ## external network
+    external_network_name:
+      type: string
+      default: public
+    ## mgmt network
+    management_network:
+      type: string
+      default: management
+    ## images
+    ubuntu1604-image:
+      type: string
+      default: ubuntu-software-config
+    alpine-image:
+      type: string
+      default: alpine
+    kali-image:
+      type: string
+      default: kali
+    vyos-image:
+      type: string
+      default: vyos1.1.8-2
+    ## default u/p
+    ssh_username:
+      type: string
+      default: sdlmgmt
+    ## default flavor
+    flavor:
+      type: string
+      default: ds2G
+    alpine-flavor:
+      type: string
+      default: m1.tiny
+    ## private keys
+    private_key_path:
+      type: string
+    private_key_name:
+      type: string
+    openstack_config:
+      type: map
+      entry_schema: string
+    proxy_url:
+      type: string
+      default: http://192.168.168.1:80
+    # config
+    # networks/hosts
+
+    # NETWORKs #######
+
+    # EXTNET
+    net_extnet_cidr: 
+      type: string
+      default: 192.168.254.0/24
+
+    # SIMINT1
+    net_simint1_cidr: 
+      type: string
+      default: 27.8.0.0/16
+
+    # Outside
+    net_outside_cidr: 
+      type: string
+      default: 203.0.113.0/24
+
+    # DMZ
+    net_dmz_cidr: 
+      type: string
+      default: 198.51.100.0/24
+
+    # Server
+    net_server_cidr: 
+      type: string
+      default: 192.168.2.0/24
+
+    # Server
+    net_iot_cidr: 
+      type: string
+      default: 192.168.10.0/24
+
+    # NODEs ##########
+
+    # dns #
+
+    dns_dmz_ip:
+      type: string
+      default: 198.51.100.2
+
+    dns_hostname:
+      type: string
+      default: dns
+
+    dns_domain:
+      type: string
+      default: { get_input: domain_name }
+
+    dns_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - 127.0.0.1
+
+    # provider #
+    
+    provider_outside_ip:
+      type: string
+      default: 203.0.113.1
+
+    provider_extnet_ip:
+      type: string
+      default: 192.168.254.10
+
+    provider_simint1_ip:
+      type: string
+      default: 27.8.0.1
+
+    provider_hostname:
+      type: string
+      default: provider
+
+    provider_domain:
+      type: string
+      default: nodomain
+
+    provider_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - 8.8.8.8
+
+    # firewall #
+
+    firewall_outside_ip:
+      type: string
+      default: 203.0.113.2
+
+    firewall_dmz_ip:
+      type: string
+      default: 198.51.100.1
+
+    firewall_server_ip:
+      type: string
+      default: 192.168.2.1
+
+    firewall_iot_ip:
+      type: string
+      default: 192.168.10.1
+
+    firewall_hostname:
+      type: string
+      default: firewall
+
+    firewall_domain:
+      type: string
+      default: { get_input: domain_name }
+
+    firewall_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: dns_dmz_ip }
+
+    # root-ns #
+
+    root-ns_simint1_ip:
+      type: string
+      default: 27.8.8.8
+
+    root-ns_hostname:
+      type: string
+      default: root-ns
+
+    root-ns_domain:
+      type: string
+      default: nodomain
+
+    root-ns_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - 127.0.0.1
+
+    # www #
+
+    www_dmz_ip:
+      type: string
+      default: 198.51.100.5
+
+    www_hostname:
+      type: string
+      default: www
+
+    www_domain:
+      type: string
+      default: { get_input: domain_name }
+
+    www_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: dns_dmz_ip }
+
+    www_cms_login:
+      type: string
+      default: admin
+
+    www_cms_password:
+      type: string
+      default: 2diffikult
+
+    www_cms_title:
+      type: string
+      default: ACME
+
+    www_cms_dbname:
+      type: string
+      default: CMS
+
+    # ftp #
+
+    ftp_dmz_ip:
+      type: string
+      default: 198.51.100.6
+
+    ftp_hostname:
+      type: string
+      default: ftp
+
+    ftp_domain:
+      type: string
+      default: { get_input: domain_name }
+
+    ftp_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: dns_dmz_ip }
+
+    # waf #
+
+    waf_dmz_ip:
+      type: string
+      default: 198.51.100.100
+
+    waf_hostname:
+      type: string
+      default: waf
+
+    waf_domain:
+      type: string
+      default: { get_input: domain_name }
+
+    waf_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: dns_dmz_ip }
+
+    # collab #
+
+    collab_dmz_ip:
+      type: string
+      default: 198.51.100.15
+
+    collab_hostname:
+      type: string
+      default: collab
+
+    collab_domain:
+      type: string
+      default: { get_input: domain_name }
+
+    collab_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: dns_dmz_ip }
+
+    collab_dbname:
+      type: string
+      default: nextcloud
+
+    collab_adminuser:
+      type: string
+      default: admin
+
+    collab_adminpass:
+      type: string
+      default: admin
+
+
+
+    # db #
+
+    db_server_ip:
+      type: string
+      default: 192.168.2.2
+
+    db_hostname:
+      type: string
+      default: db
+
+    db_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    db_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: dns_dmz_ip }
+  
+    db_admin_pass:
+      type: string
+      default: venerus
+
+    # siem #
+
+    siem_server_ip:
+      type: string
+      default: 192.168.2.3
+
+    siem_hostname:
+      type: string
+      default: siem
+
+    siem_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    siem_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: siem_server_ip }
+
+    # ids #
+
+    ids_server_ip:
+      type: string
+      default: 192.168.2.4
+
+    ids_hostname:
+      type: string
+      default: ids
+
+    ids_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    ids_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: ids_server_ip }
+
+    # intranet # 
+
+    intranet_server_ip:
+      type: string
+      default: 192.168.2.5
+
+    intranet_hostname:
+      type: string
+      default: intranet
+
+    intranet_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    intranet_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: intranet_server_ip }
+
+    # dc #
+
+    dc_server_ip:
+      type: string
+      default: 192.168.2.6
+
+    dc_hostname:
+      type: string
+      default: dc
+
+    dc_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    dc_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: dc_server_ip }
+
+    # nas #
+
+    nas_server_ip:
+      type: string
+      default: 192.168.2.7
+
+    nas_hostname:
+      type: string
+      default: nas
+
+    nas_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    nas_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: nas_server_ip }
+
+    # videoserver #
+
+    videoserver_server_ip:
+      type: string
+      default: 192.168.2.10
+
+    videoserver_hostname:
+      type: string
+      default: nas
+
+    videoserver_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    videoserver_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: videoserver_server_ip }
+
+    # cam 1 #
+
+    cam1_server_ip:
+      type: string
+      default: 192.168.2.11
+
+    cam1_hostname:
+      type: string
+      default: cam1
+
+    cam1_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    cam1_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: cam1_server_ip }
+
+    # cam 2 #
+
+    cam2_server_ip:
+      type: string
+      default: 192.168.2.12
+
+    cam2_hostname:
+      type: string
+      default: cam2
+
+    cam2_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    cam2_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: cam2_server_ip }
+
+    # cam 3 #
+
+    cam3_server_ip:
+      type: string
+      default: 192.168.2.13
+
+    cam3_hostname:
+      type: string
+      default: cam3
+
+    cam3_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    cam3_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: cam3_server_ip }
+
+    # cam 4 #
+
+    cam4_server_ip:
+      type: string
+      default: 192.168.2.14
+
+    cam4_hostname:
+      type: string
+      default: cam4
+
+    cam4_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    cam4_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: cam4_server_ip }
+
+    # cam 5 #
+
+    cam5_server_ip:
+      type: string
+      default: 192.168.2.15
+
+    cam5_hostname:
+      type: string
+      default: cam5
+
+    cam5_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    cam5_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: cam5_server_ip }
+
+    # IoT #
+
+    # cam 6 #
+
+    cam6_iot_ip:
+      type: string
+      default: 192.168.10.16
+
+    cam6_hostname:
+      type: string
+      default: cam6
+
+    cam6_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    cam6_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: cam6_iot_ip }
+
+    # hmi #
+
+    hmi_iot_ip:
+      type: string
+      default: 192.168.10.100
+
+    hmi_hostname:
+      type: string
+      default: hmi
+
+    hmi_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    hmi_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: hmi_iot_ip }
+
+    # elev #
+
+    elev_iot_ip:
+      type: string
+      default: 192.168.10.101
+
+    elev_hostname:
+      type: string
+      default: elev
+
+    elev_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    elev_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: elev_iot_ip }
+
+    # climate #
+
+    climate_iot_ip:
+      type: string
+      default: 192.168.10.102
+
+    climate_hostname:
+      type: string
+      default: elev
+
+    climate_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    climate_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: climate_iot_ip }
+
+    # alarm #
+
+    alarm_iot_ip:
+      type: string
+      default: 192.168.10.103
+
+    alarm_hostname:
+      type: string
+      default: alarm
+
+    alarm_domain:
+      type: string
+      default: { get_input: localdomain_name }
+
+    alarm_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: alarm_iot_ip }
+
+    # client #
+
+    client_simint1_ip:
+      type: string
+      default: 27.8.9.10
+
+    client_hostname:
+      type: string
+      default: client
+
+    client_domain:
+      type: string
+      default: nodomain
+
+    client_dns:
+      type: list
+      entry_schema:
+        type: string
+      default:
+        - { get_input: root-ns_simint1_ip }
+
+    client_user_username:
+      type: string
+      default: eve
+
+    client_user_password:
+      type: string
+      default: supersecret
+
+    # DOMAINs #########
+    domain_name:
+      type: string
+      default: acme.com
+
+    localdomain_name:
+      type: string
+      default: acme.local

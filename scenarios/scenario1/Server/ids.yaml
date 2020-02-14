@@ -1,0 +1,42 @@
+topology_template:
+   node_templates:    
+
+    IDS_Server_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: IDS_Server_port
+        fixed_ip: { get_input: ids_server_ip }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+      #  - security_group: allowall
+        - subnet: Server_subnet
+        - network: Server
+
+    ids:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: ubuntu1604-image }
+        flavor: { get_input: flavor }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: ids
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+        server:
+          userdata: { get_input: ubuntu1604_init }     
+      requirements:
+        - key_pair: keypair
+        - port: IDS_Server_port
+
+    ### SDL ###
+
+    ids_system:
+      type: sdl.nodes.System.Linux
+      properties:
+        hostname: { get_input: ids_hostname }
+        domain: { get_input: ids_domain }
+        dns: { get_input: ids_dns }
+      requirements:
+        - host: ids

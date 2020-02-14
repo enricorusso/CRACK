@@ -29,7 +29,6 @@ relationship_types:
                 - "ssh.key_filename > { get_input: private_key_path }"
                 - "ssh.use_sudo > true"
 
-
 node_types:
   sdl.nodes.Vulnerability:
     derived_from: sdl.nodes.Root
@@ -114,7 +113,7 @@ node_types:
         default: 
           hasAccount: "hasAccount(A, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>user{tosca_id}') <= 
           knows(A, '$this=>user[username]') &
-          hasUser('$this=>user{tosca_id}', '$this=>host{tosca_id}', P, R) & 
+          hasUser('$this=>user{tosca_id}', '$this=>server=>swcontainer=>host{tosca_id}', P, R) & 
           listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
           hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
           hasAccount(A, K, V)"
@@ -180,7 +179,6 @@ node_types:
 
   sdl.nodes.Vulnerability.Linux.RCE:
     derived_from: sdl.nodes.Vulnerability.Linux
-
   
   sdl.nodes.Vulnerability.Linux.RCE.Mezzanine.Werkzeug:
     derived_from: sdl.nodes.Vulnerability.Linux.RCE
@@ -193,7 +191,7 @@ node_types:
         entry_schema:
           type: string
         required: no
-        default: 
+        default:  
           hasAccount: "hasAccount(A, '$this=>server=>container=>swcontainer=>host{tosca_id}', '$this=>server=>user{tosca_id}') <= 
           hasUser('$this=>server=>user{tosca_id}', '$this=>server=>container=>swcontainer=>host{tosca_id}', P, R) &
           listeningOn('$this=>server=>container=>swcontainer=>host{tosca_id}', '$this=>server=>container[protocol]', '$this=>server=>container[port]') & 
@@ -206,7 +204,6 @@ node_types:
         required: no
         default:
           hasAccount: "!include hasaccount-linux-werkzeug.yaml"
-
     requirements:
       - server:
           capability: sdl.capabilities.VulnerabilityContainer
@@ -225,3 +222,133 @@ node_types:
             proxy_url: 
               type: string
               default: { get_input: proxy_url }
+
+  # CVE-2019-11043 #
+
+  sdl.nodes.Vulnerability.Linux.CVE_2019_11043:
+    derived_from: sdl.nodes.Vulnerability.Linux.RCE
+    attributes:
+      path:
+        type: string
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          hasAccount: "hasAccount(A, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server=>user{tosca_id}') <= 
+          hasUser('$this=>server=>user{tosca_id}', '$this=>server=>swcontainer=>host{tosca_id}', P, R) &
+          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
+          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
+          hasAccount(A, K, V)"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default:
+          hasAccount: "!include hasaccount-linux-CVE_2019_11043.yaml"
+    requirements:
+      - server:
+          capability: sdl.capabilities.HtdocsContainer
+          relationship: sdl.relationships.GetsPath
+          node: sdl.nodes.Software.Server.HTTP.Linux.Nginx
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Vulnerability/linux/CVE_2019_11043-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
+  # CVE-2019-15017 #
+
+  sdl.nodes.Vulnerability.Linux.Webmin.CVE_2019_15107:
+    derived_from: sdl.nodes.Vulnerability.Linux.RCE
+    attributes:
+      path:
+        type: string
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          hasAccount: "hasAccount(A, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server=>user{tosca_id}') <= 
+          hasUser('$this=>server=>user{tosca_id}', '$this=>server=>swcontainer=>host{tosca_id}', P, R) &
+          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
+          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
+          hasAccount(A, K, V)"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default:
+          hasAccount: "!include hasaccount-linux-CVE_2019_15107.yaml"
+    requirements:
+      - server:
+          capability: sdl.capabilities.VulnerabilityContainer
+          node: sdl.nodes.Software.Server.Linux.Webmin
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Vulnerability/linux/CVE_2019_15107-webmin-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
+  # apache open proxy #
+
+  sdl.nodes.Vulnerability.Server.HTTP.Linux.Apache.OpenProxy:
+    derived_from: sdl.nodes.Vulnerability.Linux.RCE
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default:
+          hostACL: "hostACL(K, H, 'http', P) <= listeningOn('$this=>server=>swcontainer=>host{tosca_id}', 
+          '$this=>server[protocol]', '$this=>server[port]') &
+          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') &
+          listeningOn(H, 'http', P) & hostACL('$this=>server=>swcontainer=>host{tosca_id}', H, 'http', P)"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default:
+         hostACL: "!include hostACL-linux-apache-openproxy.yaml"
+    requirements:
+      - server:
+          capability: sdl.capabilities.VulnerabilityContainer
+          node: sdl.nodes.Software.Server.HTTP.Linux.Apache
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Vulnerability/linux/apacheopenproxy-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+  
