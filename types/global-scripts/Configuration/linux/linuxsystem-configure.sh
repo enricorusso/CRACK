@@ -11,6 +11,12 @@ test -f /etc/os-release && source /etc/os-release
 
 echo -n "Distro: "
 case $ID in
+    alpine)
+        echo "alpine"
+        #BUG!
+        sed -i 's/\/24/\nnetmask 255.255.255.0/g' /etc/network/interfaces
+        ;;
+
     ubuntu|debian|kali)
         echo "ubuntu/debian"
 

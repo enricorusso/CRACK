@@ -10,19 +10,19 @@ node_types:
           type: string
         required: no
         default: 
-          #existsRoute1: existsRoute(N,M,X) <= isConnected(X,N) & isConnected(X,M) & isRouter(X)
-          #existsRoute2: existsRoute(N,M,X) <= isConnected(X,N) & isConnected(X,R) & isRouter(X) & existsRoute(R,M,Y)
-          #hostACL1: hostACL(H,K,P,Q) <= listeningOn(K,P,Q) & isConnected(K,N) & isConnected(H,M) & isConnected(S,M) & isRouter(S) & existsRoute(M,N,S)
-          #hostACL2: hostACL(H,K,P,Q) <= listeningOn(K,P,Q) & isConnected(H,N) & isConnected(K,N)
-          #hasAccount: hasAccount(A,H,U) <= hasUser(U,H,P,R) & knows(A,U) & knows(A,P)
-          #listeningOn: listeningOn(X,P,Q) <= appliesNAT(X,R,H,Q,P)
-          #hostACL3: hostACL(H,K,P,Q) <= hostACL(H,X,P,R) & hostACL(X,K,P,Q) & appliesNAT(X,Q,K,R,P)
-          #bug1: "+ appliesNAT(0, 'a', 1, 'b', 1, 'c')"
-          #bug2: "- appliesNAT(0, 'a', 1, 'b', 1, 'c')"
-          existsRoute: existsRoute(N,M,X) <= isConnected(X,N) & isConnected(X,M) & isRouter(X)
-          hostACL1: hostACL(H,K,P,Q) <= listeningOn(K,P,Q) & isConnected(K,N) & isConnected(H,M) & isConnected(S,M) & isRouter(S) & existsRoute(T,N,S)
-          hostACL2: hostACL(H,K,P,Q) <= listeningOn(K,P,Q) & isConnected(H,N) & isConnected(K,N)
+          #bug1: "+ Masquerade('a', 'b')"
+          #bug2: "- Masquerade('a', 'b')"
+          #bug3: "+ Forward('a', 'b', 0, 'd', 0)"
+          #bug4: "- Forward('a', 'b', 0, 'd', 0)"
           hasAccount: hasAccount(A,H,U) <= hasUser(U,H,P,R) & knows(A,U) & knows(A,P)
+          existsRoute1: existsRoute(N, M, N) <= isConnected(N, M)
+          existsRoute2: existsRoute(N, M, R) <= isRouter(R) & isConnected(N, X) & isConnected(R, X) & hasDefaultGateway(N, R) & existsRoute(R, M, Y)
+          existsRoute3: existsRoute(N, M, R) <= isRouter(R) & isConnected(N, X) & isConnected(R, X) & hasRoute(N, M, R) & existsRoute(R, M, Y)
+          canConnect1: canConnect(N, M) <= isConnected(M, X) & existsRoute(N, X, P) & isConnected(N, Y) & existsRoute(M, Y, R)
+          canConnect2: canConnect(N, M) <= isConnected(R, Y) & existsRoute(N, Y, Q) & isRouter(R) & Masquerade(N, R) & canConnect(R, M)
+          canConnect3: canConnect(N, M) <= isConnected(N, X) & isConnected(R, Y) & existsRoute(N, Y, Q) & isRouter(R) & Masquerade(X, R) & canConnect(R, M)
+          hostACL1: hostACL(N, M, P, Q) <= canConnect(N, M) & listeningOn(M, P, Q)
+          #hostACL2: hostACL(N, M, P, Q) <= canConnect(N, R) & isRouter(R) & Forward(R, M, P, Q, Y) & canConnect(R, M) & listeningOn(M, P, Q)
       runtime:
         type: map
         entry_schema:
@@ -31,7 +31,9 @@ node_types:
         default:
           hostACL1: "!include hostacl-linux.yaml"
           hostACL2: "!include hostacl-linux.yaml"
-          existsRoute: "!include existsroute-linux.yaml"
+          existsRoute1: "!include existsroute-linux.yaml"
+          existsRoute2: "!include existsroute-linux.yaml"
+          existsRoute3: "!include existsroute-linux.yaml"
 
 topology_template:    
   node_templates:    

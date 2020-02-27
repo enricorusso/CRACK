@@ -7,9 +7,22 @@ test -f /etc/os-release && source /etc/os-release
 
 permitrootlogin=$(ctx node properties PermitRootLogin)
 permitpassword=$(ctx node properties PasswordAuthentication)
+banner=$(ctx node properties Banner)
 
 echo -n "Distro: "
 case $ID in
+    alpine)
+        sed -i "s/^PasswordAuthentication .*/PasswordAuthentication $permitpassword/" /etc/ssh/sshd_config
+        echo "PermitRootLogin $permitrootlogin" >> /etc/ssh/sshd_config
+
+        if [ "$banner" != "" ]; then
+            echo "Banner: $banner"
+            echo $banner > /etc/sshd_banner
+            echo "Banner /etc/sshd_banner" >> /etc/ssh/sshd_config
+        fi
+
+        service sshd restart
+        ;;
     ubuntu|debian)
         echo "ubuntu/debian"
 

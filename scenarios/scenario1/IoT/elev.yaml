@@ -40,3 +40,11 @@ topology_template:
         dns: { get_input: elev_dns }
       requirements:
         - host: elev
+
+    elev_DefaultRoute1:
+      type: sdl.nodes.Configuration.DefaultRoute.Linux
+      properties:
+        address: 1.2.3.4
+      requirements:
+         - system: elev_system
+         - gateway: Firewall_UFW

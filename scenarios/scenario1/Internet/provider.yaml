@@ -81,8 +81,8 @@ topology_template:
         destination: 198.51.100.0/24 # { get_property: [ DMZ_subnet, subnet, cidr ] } # ARIA Bug!
         address: 203.0.113.2 # { get_property: [ FW_Outside_port, fixed_ip ] }
       requirements:
-        - source_network: Outside_subnet
         - destination_network: DMZ_subnet
         - firewall: Provider_Firewall
+        - gateway: Firewall_UFW
         # avoid configuration lock problem!
         - dependency: Provider_InitPermissive

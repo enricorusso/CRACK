@@ -40,3 +40,11 @@ topology_template:
         dns: { get_input: intranet_dns }
       requirements:
         - host: intranet
+
+    intranet_DefaultRoute1:
+      type: sdl.nodes.Configuration.DefaultRoute.Linux
+      properties:
+        address: 1.2.3.4
+      requirements:
+         - system: intranet_system
+         - gateway: Firewall_UFW

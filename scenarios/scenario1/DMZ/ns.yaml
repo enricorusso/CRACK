@@ -1,7 +1,7 @@
 topology_template:
    node_templates:    
 
-    # Web server
+    # DNS server
 
     dns_DMZ_port:
       type: aria.openstack.nodes.Port
@@ -42,6 +42,14 @@ topology_template:
         dns: { get_input: dns_dns }
       requirements:
         - host: ns
+
+    dns_DefaultRoute1:
+      type: sdl.nodes.Configuration.DefaultRoute.Linux
+      properties:
+        address: 1.2.3.4
+      requirements:
+         - system: dns_system
+         - gateway: Firewall_UFW
 
     dns_bind:
       type: sdl.nodes.Software.Server.DNS.Linux.Bind

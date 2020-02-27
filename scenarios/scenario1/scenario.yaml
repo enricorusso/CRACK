@@ -30,6 +30,7 @@ imports:
   - IoT/hmi.yaml
   - IoT/alarm.yaml
   - aria-1.0
+  - ../types/crack-plugin.yaml
   - ../types/openstack-plugin.yaml
   - ../types/openstack-mgmt.yaml
   - ../types/sdl.yaml

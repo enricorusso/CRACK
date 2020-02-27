@@ -91,6 +91,30 @@ node_types:
               type: string
               default: { get_input: proxy_url }
 
+  ## User default credential ## 
+
+  sdl.nodes.Vulnerability.User.DefaultCredential:
+    derived_from: sdl.nodes.Vulnerability
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default:
+          hasAccount: "hasAccount(A, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>user{tosca_id}') <= 
+          hasUser('$this=>user{tosca_id}', '$this=>server=>swcontainer=>host{tosca_id}', P, R) & 
+          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port]) & 
+          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port]) & 
+          hasAccount(A, K, V)"
+    requirements:
+      - user:
+         capability: sdl.capabilities.PrivilegeProvider
+         node: sdl.nodes.User
+      - server:
+          capability: sdl.capabilities.VulnerabilityContainer
+          node: sdl.nodes.Software.Server
+
   ## Linux Users ##
 
   sdl.nodes.Vulnerability.Linux.User:
@@ -100,7 +124,6 @@ node_types:
         type: string
       password:
         type: string
-
 
   sdl.nodes.Vulnerability.Linux.User.RemoteWeakPassword:
     derived_from: sdl.nodes.Vulnerability.Linux.User
@@ -114,8 +137,8 @@ node_types:
           hasAccount: "hasAccount(A, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>user{tosca_id}') <= 
           knows(A, '$this=>user[username]') &
           hasUser('$this=>user{tosca_id}', '$this=>server=>swcontainer=>host{tosca_id}', P, R) & 
-          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
-          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
+          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port]) & 
+          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port]) & 
           hasAccount(A, K, V)"
       runtime:
         type: map
@@ -156,8 +179,8 @@ node_types:
         required: no
         default: 
           knows: "knows(A, '$this=>user[username]') <= 
-          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
-          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
+          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port]) & 
+          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port]) & 
           hasAccount(A, K, V)"
       runtime:
         type: map
@@ -194,8 +217,8 @@ node_types:
         default:  
           hasAccount: "hasAccount(A, '$this=>server=>container=>swcontainer=>host{tosca_id}', '$this=>server=>user{tosca_id}') <= 
           hasUser('$this=>server=>user{tosca_id}', '$this=>server=>container=>swcontainer=>host{tosca_id}', P, R) &
-          listeningOn('$this=>server=>container=>swcontainer=>host{tosca_id}', '$this=>server=>container[protocol]', '$this=>server=>container[port]') & 
-          hostACL(K, '$this=>server=>container=>swcontainer=>host{tosca_id}', '$this=>server=>container[protocol]', '$this=>server=>container[port]') & 
+          listeningOn('$this=>server=>container=>swcontainer=>host{tosca_id}', '$this=>server=>container[protocol]', $this=>server=>container[port]) & 
+          hostACL(K, '$this=>server=>container=>swcontainer=>host{tosca_id}', '$this=>server=>container[protocol]', $this=>server=>container[port]) & 
           hasAccount(A, K, V)"
       runtime:
         type: map
@@ -239,8 +262,8 @@ node_types:
         default: 
           hasAccount: "hasAccount(A, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server=>user{tosca_id}') <= 
           hasUser('$this=>server=>user{tosca_id}', '$this=>server=>swcontainer=>host{tosca_id}', P, R) &
-          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
-          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
+          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port]) & 
+          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port]) & 
           hasAccount(A, K, V)"
       runtime:
         type: map
@@ -284,8 +307,8 @@ node_types:
         default: 
           hasAccount: "hasAccount(A, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server=>user{tosca_id}') <= 
           hasUser('$this=>server=>user{tosca_id}', '$this=>server=>swcontainer=>host{tosca_id}', P, R) &
-          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
-          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') & 
+          listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port]) & 
+          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port]) & 
           hasAccount(A, K, V)"
       runtime:
         type: map
@@ -324,8 +347,8 @@ node_types:
         required: no
         default:
           hostACL: "hostACL(K, H, 'http', P) <= listeningOn('$this=>server=>swcontainer=>host{tosca_id}', 
-          '$this=>server[protocol]', '$this=>server[port]') &
-          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]') &
+          '$this=>server[protocol]', $this=>server[port]) &
+          hostACL(K, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port]) &
           listeningOn(H, 'http', P) & hostACL('$this=>server=>swcontainer=>host{tosca_id}', H, 'http', P)"
       runtime:
         type: map

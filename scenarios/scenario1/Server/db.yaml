@@ -41,6 +41,14 @@ topology_template:
       requirements:
         - host: db
 
+    db_DefaultRoute1:
+      type: sdl.nodes.Configuration.DefaultRoute.Linux
+      properties:
+        address: 1.2.3.4
+      requirements:
+         - system: db_system
+         - gateway: Firewall_UFW
+
     db_dbms:
       type: sdl.nodes.Software.Server.DBMS.Linux.MySQL
       properties:

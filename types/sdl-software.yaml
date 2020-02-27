@@ -69,7 +69,7 @@ node_types:
           type: string
         required: no
         default: 
-          listeningOn: "+ listeningOn('$this=>swcontainer=>host{tosca_id}', '$this[protocol]', '$this[port]')"
+          listeningOn: "+ listeningOn('$this=>swcontainer=>host{tosca_id}', '$this[protocol]', $this[port])"
       runtime:
         type: map
         entry_schema:
@@ -92,6 +92,9 @@ node_types:
         default: "no"
         constraints:
           - valid_values: [ "yes", "no" ]
+      Banner:
+        type: string
+        default: ""
     requirements:
       - swcontainer:
           capability: sdl.capabilities.SoftwareContainer
@@ -132,7 +135,7 @@ node_types:
           type: string
         required: no
         default: 
-          listeningOn: "+ listeningOn('$this=>swcontainer=>host{tosca_id}', '$this[protocol]', '$this[port]')"
+          listeningOn: "+ listeningOn('$this=>swcontainer=>host{tosca_id}', '$this[protocol]', $this[port])"
       runtime:
         type: map
         entry_schema:
@@ -442,7 +445,7 @@ node_types:
           type: string
         required: no
         default: 
-          listeningOn: "+ listeningOn('$this=>swcontainer=>host{tosca_id}', '$this[protocol]', '$this[port]')"
+          listeningOn: "+ listeningOn('$this=>swcontainer=>host{tosca_id}', '$this[protocol]', $this[port])"
       runtime:
         type: map
         entry_schema:
@@ -491,7 +494,7 @@ node_types:
           type: string
         required: no
         default: 
-          listeningOn: "+ listeningOn('$this=>swcontainer=>host{tosca_id}', '$this[protocol]', '$this[port]')"
+          listeningOn: "+ listeningOn('$this=>swcontainer=>host{tosca_id}', '$this[protocol]', $this[port])"
       runtime:
         type: map
         entry_schema:

@@ -43,6 +43,14 @@ topology_template:
       requirements:
         - host: client
 
+    client_DefaultRoute1:
+      type: sdl.nodes.Configuration.DefaultRoute.Linux
+      properties:
+        address: 1.2.3.4
+      requirements:
+         - system: client_system
+         - gateway: Provider_Firewall
+
     client_user1:
       type: sdl.nodes.User.Linux
       properties:

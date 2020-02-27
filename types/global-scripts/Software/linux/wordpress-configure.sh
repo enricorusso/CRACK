@@ -59,6 +59,8 @@ case $ID in
         wp post update 1 --post_title="Welcome to $title !" --post_content="Security is monkey business &#x1F435;" --allow-root
         chown www-data.www-data wp-config.php
         chmod 440 wp-config.php
+        # they should be www-data writable.. 
+        chown -R www-data.www-data wp-content/
         ;;
     *)
         echo "distro $ID not supported :("

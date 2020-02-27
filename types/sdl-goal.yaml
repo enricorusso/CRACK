@@ -19,7 +19,7 @@ node_types:
         entry_schema:
           type: string
         required: no
-        default: { goal: "print(hostACL('$this=>system=>host{tosca_id}','$this=>server=>swcontainer=>host{tosca_id}','$this=>server[protocol]','$this=>server[port]'))" }
+        default: { goal: "print(hostACL('$this=>system=>host{tosca_id}','$this=>server=>swcontainer=>host{tosca_id}','$this=>server[protocol]',$this=>server[port]))" }
     requirements:
       - system:
           node: sdl.nodes.System

@@ -12,15 +12,15 @@ imports:
   - sdl-init.yaml
 
 policy_types:
-  VerifyWorkflow:
-    derived_from: aria.Workflow
-    properties:
-      implementation:
-        type: string
-        default: aria.orchestrator.workflows.sdl.verify
-      output_directory:
-        type: string
-        default: /tmp
+#  VerifyWorkflow:
+#    derived_from: aria.Workflow
+#    properties:
+#      implementation:
+#        type: string
+#        default: aria.orchestrator.workflows.sdl.verify
+#      output_directory:
+#        type: string
+#        default: /tmp
 
   TestWorkflow:
     derived_from: aria.Workflow
@@ -106,3 +106,11 @@ node_types:
       type: sdl.capabilities.KnowledgeProvider
      goal:
       type: sdl.capabilities.GoalProvider
+    interfaces:
+     CRACK:
+      type: sdl.interfaces.CRACK
+      compileproperty:
+       inputs:
+        property:
+         type: string
+         default: behavior

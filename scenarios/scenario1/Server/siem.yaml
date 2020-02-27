@@ -40,3 +40,11 @@ topology_template:
         dns: { get_input: siem_dns }
       requirements:
         - host: siem
+
+    siem_DefaultRoute1:
+      type: sdl.nodes.Configuration.DefaultRoute.Linux
+      properties:
+        address: 1.2.3.4
+      requirements:
+         - system: siem_system
+         - gateway: Firewall_UFW

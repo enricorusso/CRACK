@@ -10,29 +10,66 @@ groups=$(ctx -j node properties groups)
 
 echo "Creating user $username"
 
-if  id $username; then
-    echo "User $username exists"
-else
-    echo "Creating user $username"
-    # TODO: if a group with the same name exists it fails..
-    if [ "$home" != "" ]; then
-        useradd -d $home -m $username
-    else
-        useradd -m $username
-        home=$(getent passwd $username | cut -d: -f6)
-    fi
-fi
+ID="unknown"
+test -f /etc/os-release && source /etc/os-release
 
-if [ "$password" != "" ]; then
-    echo "Setting $username password to $password"
-    echo "$username:$password" | chpasswd
-fi
+echo -n "Distro: "
+case $ID in
+    alpine)
+        if  id $username; then
+            echo "User $username exists"
+        else
+            echo "Creating user $username"
+            # TODO: if a group with the same name exists it fails..
+            if [ "$home" != "" ]; then
+                adduser -h $home $username -D
+            else
+                adduser $username -D
+                home=$( getent passwd $username | cut -d: -f6)
+            fi
+        fi
 
-if [ "$groups" != "" ] && [ "$groups" != "null" ]; then
-    g=$(echo ${groups//[\[\]\",]})
+        if [ "$password" != "" ]; then
+            echo "Setting $username password to $password"
+            echo "$username:$password" | chpasswd
+        fi
 
-    echo "groups: $g"
-    usermod -G $g $username
-fi
+        if [ "$groups" != "" ] && [ "$groups" != "null" ]; then
+            g=$(echo ${groups//[\[\]\",]})
 
-ctx node attributes username = $username
+            echo "groups: $g"
+            usermod -G $g $username
+        fi
+        ;;
+    ubuntu|debian|kali)
+        if  id $username; then
+            echo "User $username exists"
+        else
+            echo "Creating user $username"
+            # TODO: if a group with the same name exists it fails..
+            if [ "$home" != "" ]; then
+                useradd -d $home -m $username
+            else
+                useradd -m $username
+                home=$(getent passwd $username | cut -d: -f6)
+            fi
+        fi
+
+        if [ "$password" != "" ]; then
+            echo "Setting $username password to $password"
+            echo "$username:$password" | chpasswd
+        fi
+
+        if [ "$groups" != "" ] && [ "$groups" != "null" ]; then
+            g=$(echo ${groups//[\[\]\",]})
+
+            echo "groups: $g"
+            usermod -G $g $username
+        fi
+
+        ctx node attributes username = $username
+        ;;
+    *)
+        echo "distro $ID not supported :("
+        ;;
+esac

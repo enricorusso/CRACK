@@ -43,6 +43,14 @@ topology_template:
       requirements:
         - host: root-ns
 
+    root-ns_DefaultRoute1:
+      type: sdl.nodes.Configuration.DefaultRoute.Linux
+      properties:
+        address: 1.2.3.4
+      requirements:
+         - system: root-ns_system
+         - gateway: Provider_Firewall
+
     root-ns_bind:
       type: sdl.nodes.Software.Server.DNS.Linux.Bind
       properties:

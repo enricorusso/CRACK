@@ -33,7 +33,7 @@ node_types:
       - host:
           capability: tosca.capabilities.Container
           node: tosca.nodes.Compute
-          relationship: tosca.relationships.HostedOn 
+          relationship: tosca.relationships.HostedOn
     capabilities:
       vulnerabilty:
           type: sdl.capabilities.VulnerabilityContainer
@@ -81,7 +81,7 @@ node_types:
         required: no
         default: 
          isRouter: "+ isRouter('$this=>host{tosca_id}')"
-         existsRoute: "+ existsRoute('$this=>host=>port=>subnet{tosca_id}','$this=>host=>port=>subnet{tosca_id}','$this=>host{tosca_id}')"
+         #existsRoute: "+ existsRoute('$this=>host=>port=>subnet{tosca_id}','$this=>host=>port=>subnet{tosca_id}','$this=>host{tosca_id}')"
     requirements:
       - defaultgw:
           node: aria.openstack.nodes.Port

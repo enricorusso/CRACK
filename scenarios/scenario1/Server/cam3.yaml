@@ -40,3 +40,11 @@ topology_template:
         dns: { get_input: cam3_dns }
       requirements:
         - host: cam3
+
+    cam3_DefaultRoute1:
+      type: sdl.nodes.Configuration.DefaultRoute.Linux
+      properties:
+        address: 1.2.3.4
+      requirements:
+         - system: cam3_system
+         - gateway: Firewall_UFW

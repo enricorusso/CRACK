@@ -92,5 +92,5 @@ topology_template:
       properties:
         address: 1.2.3.4
       requirements:
-         - default_network: Outside_subnet
          - firewall: Firewall_UFW
+         - gateway: Provider_Firewall

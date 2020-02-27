@@ -90,7 +90,6 @@ relationship_types:
         default:
           - username
 
-
 data_types:
   sdl.datatypes.route:
      derived_from: tosca.datatypes.Root
@@ -137,15 +136,20 @@ node_types:
         type: string
         required: true
     requirements:
-      - source_network:
-          node: aria.openstack.nodes.Subnet
-          capability: tosca.capabilities.Node
+      # - source_network:
+      #     node: aria.openstack.nodes.Subnet
+      #     capability: tosca.capabilities.Node
       - destination_network:
           node:  aria.openstack.nodes.Network
           capability: tosca.capabilities.Node
+      - gateway:
+          capability: tosca.capabilities.Node
+          node: sdl.nodes.System
+          relationship: tosca.relationships.DependsOn
+          occurrences: [ 0, 1 ]
 
   sdl.nodes.Configuration.DefaultRoute:
-    derived_from: sdl.nodes.Configuration
+    derived_from: sdl.nodes.Configuration.Route
     properties:
       destination:
         type: string
@@ -154,10 +158,32 @@ node_types:
       address:
         type: string
         required: true
+    # requirements:
+    #   - default_network:
+    #       node: aria.openstack.nodes.Subnet
+    #       capability: tosca.capabilities.Node
+
+  sdl.nodes.Configuration.DefaultRoute.Linux:
+    derived_from: sdl.nodes.Configuration.DefaultRoute
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          defaultGateway: "+ hasDefaultGateway('$this=>system=>host{tosca_id}', '$this=>gateway=>host{tosca_id}')"
+      runtime:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          existsRoute: "!include existsroute-linux.yaml" 
     requirements:
-      - default_network:
-          node: aria.openstack.nodes.Subnet
-          capability: tosca.capabilities.Node
+      - system:
+          capability: sdl.capabilities.ConfigurationContainer.Linux
+          node: sdl.nodes.System.Linux
 
   sdl.nodes.Configuration.Route.Firewall:
     derived_from: sdl.nodes.Configuration.Route
@@ -168,14 +194,20 @@ node_types:
           type: string
         required: no
         default: 
-          existsRoute: "+ existsRoute('$this=>source_network{tosca_id}', '$this=>destination_network{tosca_id}','$this=>firewall=>host{tosca_id}')" 
+          #existsRoute: "+ existsRoute('$this=>source_network{tosca_id}', '$this=>destination_network{tosca_id}','$this=>firewall=>host{tosca_id}')" 
+          hasRoute: "+ hasRoute('$this=>firewall=>host{tosca_id}', '$this=>destination_network{tosca_id}','$this=>gateway=>host{tosca_id}')" 
+          #hasRoute1: "+ hasRoute('$this=>firewall=>host{tosca_id}')"
+          #hasRoute2: "+ hasRoute('$this=>destination_network{tosca_id}')"
+          #hasRoute3: "+ hasRoute('$this=>gateway=>host{tosca_id}')"
+
+
       runtime:
         type: map
         entry_schema:
           type: string
         required: no
         default: 
-          existsRoute: "!include existsroute-linux.yaml" 
+          hasRoute: "!include existsroute-linux.yaml" 
 
   sdl.nodes.Configuration.DefaultRoute.Firewall:
     derived_from: sdl.nodes.Configuration.DefaultRoute
@@ -186,8 +218,9 @@ node_types:
           type: string
         required: no
         default: 
-          existsRoute: "existsRoute('$this=>default_network{tosca_id}', N, '$this=>firewall=>host{tosca_id}') <= 
-          isConnected(X, '$this=>default_network{tosca_id}') & isRouter(X) & existsRoute('$this=>default_network{tosca_id}', N, X)" 
+          #existsRoute: "existsRoute('$this=>default_network{tosca_id}', N, '$this=>firewall=>host{tosca_id}') <= 
+          #isConnected(X, '$this=>default_network{tosca_id}') & isRouter(X) & existsRoute('$this=>default_network{tosca_id}', N, X)"
+          defaultGateway: "+ hasDefaultGateway('$this=>firewall=>host{tosca_id}', '$this=>gateway=>host{tosca_id}')"
       runtime:
         type: map
         entry_schema:
@@ -290,6 +323,14 @@ node_types:
 
   sdl.nodes.Configuration.Firewall.Init.Permissive.UFW:
     derived_from: sdl.nodes.Configuration.Firewall.Init
+    properties:
+      behavior:
+        type: map
+        entry_schema:
+          type: string
+        required: no
+        default: 
+          masquerade: "+ Masquerade('$this=>firewall=>host=>port=>subnet{tosca_id}', '$this=>firewall=>host{tosca_id}')"
     requirements:
       - firewall:
           capability: sdl.capabilities.ConfigurationContainer.Linux
@@ -409,7 +450,7 @@ node_types:
         required: no
         default: 
           knows1: "knows(A, '$this[dbname]') <= knows(A, '$this=>server[password]') & hasAccount(A,H,U) & 
-          hostACL(H, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]')"
+          hostACL(H, '$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port])"
           knows2: "knows(A, '$this[dbname]') <= hasUser(U,'$this=>server=>swcontainer=>host{tosca_id}',P,'admin') & 
           hasAccount(A,'$this=>server=>swcontainer=>host{tosca_id}',U)"
       runtime:
@@ -448,7 +489,7 @@ node_types:
           type: string
         required: no
         default: 
-          listeningOn: "+ listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', '$this=>server[port]')"
+          listeningOn: "+ listeningOn('$this=>server=>swcontainer=>host{tosca_id}', '$this=>server[protocol]', $this=>server[port])"
       runtime:
         type: map
         entry_schema:

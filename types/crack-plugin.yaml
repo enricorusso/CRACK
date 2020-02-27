@@ -1,0 +1,52 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+policy_types:
+ VerifyWorkflow:
+  derived_from: aria.Workflow
+  properties:
+   implementation:
+    type: string
+    default: crack_plugin.workflows.verify
+   output_directory:
+    type: string
+    required: true
+    default: /tmp
+   property:
+    type: string
+    required: true
+    default: behavior
+   engine:
+    type: string
+    required: true
+    default: pyDatalog
+    constraints:
+      - valid_values: [ pyDatalog, souffle ]
+   engine_path:
+    type: string
+    default: /usr/bin/souffle
+    required: false
+
+interface_types:
+ sdl.interfaces.CRACK:
+  derived_from: tosca.interfaces.Root
+  compileproperty:
+   implementation: crack-plugin > crack_plugin.tasks.compileproperty
+   inputs:
+    property:
+     type: string
+     required: true
+     default: behavior
+    # TODO: required and type ignored
+    output_file:
+     type: string
+     required: true
+     default: 
+
+topology_template:
+ policies:
+  crack-plugin:
+   description: >-
+    CRACK plugin
+   type: aria.Plugin
+   properties:
+    version: 1.0.1
