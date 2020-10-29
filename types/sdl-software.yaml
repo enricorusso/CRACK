@@ -519,3 +519,51 @@ node_types:
             proxy_url: 
               type: string
               default: { get_input: proxy_url }
+
+# PLC MODBUS/TCP#
+
+  sdl.nodes.Software.PLC.ModBusTCP:
+    derived_from: sdl.nodes.Software
+    properties:
+      port: 
+        type: integer
+        required: true
+
+  sdl.nodes.Software.PLC.ModBusTCP.Linux:
+    derived_from: sdl.nodes.Software.PLC.ModBusTCP
+    requirements:
+      - swcontainer:
+          capability: sdl.capabilities.SoftwareContainer
+          node: sdl.nodes.System.Linux
+
+  sdl.nodes.Software.PLC.ModBusTCP.Linux.Moisture:
+    derived_from: sdl.nodes.Software.PLC.ModBusTCP.Linux
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Software/linux/moisture-plc-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }
+
+  sdl.nodes.Software.PLC.ModBusTCP.Linux.Irrigator:
+    derived_from: sdl.nodes.Software.PLC.ModBusTCP.Linux
+    interfaces:
+      Standard:
+        configure:
+          implementation:
+            primary: global-scripts/Software/linux/irrigator-plc-configure.sh
+            dependencies:
+              - "ssh.user > { get_input: ssh_username }"
+              - "ssh.key_filename > { get_input: private_key_path }"
+              - "ssh.use_sudo > true"
+          inputs:
+            proxy_url: 
+              type: string
+              default: { get_input: proxy_url }

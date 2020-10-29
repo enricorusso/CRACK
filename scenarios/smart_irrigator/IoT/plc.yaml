@@ -1,0 +1,68 @@
+topology_template:
+   node_templates:    
+
+    plc_IoT_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: plc_IoT_port
+        fixed_ip: { get_input: plc_iot_ip }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+      #  - security_group: allowall
+        - subnet: IoT_subnet
+        - network: IoT
+
+    plc:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: ubuntu1604_init }
+        flavor: { get_input: flavor }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: plc
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+        server:
+         userdata: { get_input: ubuntu1604_init }     
+      requirements:
+        - key_pair: keypair
+        - port: plc_IoT_port
+
+    ### SDL ###
+
+    plc_system:
+      type: sdl.nodes.System.Linux
+      properties:
+        hostname: { get_input: plc_hostname }
+        domain: { get_input: plc_domain }
+        dns: { get_input: plc_dns }
+      requirements:
+        - host: plc
+
+    plc_DefaultRoute1:
+      type: sdl.nodes.Configuration.DefaultRoute.Linux
+      properties:
+        address: 1.2.3.4
+      requirements:
+         - system: plc_system
+         - gateway: Firewall_UFW
+
+    # moisture
+    
+    moisture:
+      type: sdl.nodes.Software.PLC.ModBusTCP.Linux.Moisture
+      properties:
+        port: 502 
+      requirements:
+         - swcontainer: plc_system
+
+    # irrigator
+    
+    irrigator:
+      type: sdl.nodes.Software.PLC.ModBusTCP.Linux.Irrigator
+      properties:
+        port: 503 
+      requirements:
+         - swcontainer: plc_system
